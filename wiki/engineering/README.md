@@ -24,7 +24,7 @@ text.
 | ENG-001 | np.diag on a 2-D matrix returns the 1-D diagonal | bug | fixed | `tests/test_mesh.py::test_diag_encode_stays_2d` |
 | ENG-002 | cocotb results parser lives in check_results and returns a 2-tuple | bug | fixed | `tests/test_review_fixes.py::test_sim_parity_non_pow2_neurons` |
 | ENG-003 | tail without pipefail hides a make failure | bug | fixed | `tests/test_review_fixes.py::test_run_pnr_uses_pipefail_and_purges_stale_results` |
-| ENG-004 | testbench inject loop over PAD raises IndexError at a non-power-of-two neuron count | bug | fixed | `tests/test_review_fixes.py::test_sim_parity_non_pow2_neurons` |
+| ENG-004 | testbench inject loop over PAD raises IndexError at a non-power-of-two neuron count | bug | fixed | `tests/test_memory_interface.py::test_weight_words_pad_sources_are_zero` |
 
 ## How to add a page
 

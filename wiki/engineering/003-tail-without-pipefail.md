@@ -42,8 +42,10 @@ before the run, so metrics from a stale run cannot supply this run.
 
 `tests/test_review_fixes.py::test_run_pnr_uses_pipefail_and_purges_stale_results` fakes the docker
 call, plants a stale metadata file, and asserts the run reports `fail` and that the command contains
-`pipefail`. Confirmed against the old code: `git show b4b2e0a~1:targets/digital/flow.py` holds zero
-occurrences of `pipefail`, so the literal assertion fails on the fix's parent commit.
+`pipefail`. The pipefail assertion is confirmed against the old code: `git show b4b2e0a~1:targets/
+digital/flow.py` holds zero occurrences of `pipefail`, so the literal assertion fails on the fix's
+parent commit. The stale purge assertion is not confirmed against the old code: the test pins the
+current behavior together, and the parent commit held no purge to revert to.
 
 ---
 [Engineering log index](README.md)

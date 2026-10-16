@@ -79,10 +79,9 @@ def test_evaluate_exception_becomes_fail_verdict(tmp_path, monkeypatch):
 # pins ENG-003
 
 def test_run_pnr_uses_pipefail_and_purges_stale_results(tmp_path, monkeypatch):
-    orfs = tmp_path / "orfs"
-    (orfs / "flow" / "designs" / "src").mkdir(parents=True)
-    monkeypatch.setenv("ORFS_ROOT", str(orfs))
-    stale = orfs / "flow" / "results" / dflow.PLATFORM / "snn_core_32" / "base"
+    # pins ENG-003; no ORFS_ROOT needed: the image flow tree is self-contained,
+    # design staging and results are container mounts
+    stale = tmp_path / "results" / "snn_core_32" / "base"
     stale.mkdir(parents=True)
     (stale / "metadata.json").write_text('{"finish__timing__setup__ws": 0.5}')
     captured = {}
@@ -100,6 +99,7 @@ def test_run_pnr_uses_pipefail_and_purges_stale_results(tmp_path, monkeypatch):
                        "timesteps": 8, "util_target": 60, "clock_ns": 4.0},
                       tmp_path, timeout_s=10)
     assert m["verdict"] == "fail"  # stale metadata purged -> honest fail
+    assert not stale.exists()  # purged before the run
     assert "pipefail" in captured["cmd"][-1]
 
 

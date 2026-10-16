@@ -9,7 +9,7 @@ Text written in ASD-STE100 Simplified Technical English.
 | Status | fixed |
 | Area | testbench |
 | Fix commit | `b4b2e0a` |
-| Pinned by | `tests/test_review_fixes.py::test_sim_parity_non_pow2_neurons` |
+| Pinned by | `tests/test_memory_interface.py::test_weight_words_pad_sources_are_zero` |
 
 ## Symptom
 
@@ -41,8 +41,11 @@ above, then passed again after the revert.
 ## Notes
 
 The external memory interface of commit `a78a6b7` removed the per-source inject loop from the
-testbench, so this fault cannot come back in the same shape. The page stays because the class of fault,
-padding counted as data, holds for every future protocol at the testbench boundary.
+testbench, so this fault cannot come back in the same shape. The original pin,
+`tests/test_review_fixes.py::test_sim_parity_non_pow2_neurons`, is historical: its guarded code no
+longer exists, so it cannot fail for the documented reason. The forward pin is the zero words for pad
+sources. The fault class, padding counted as data, now lives at the weight memory words, and any future
+protocol change reintroduces it there unless the pad words stay zero.
 
 ---
 [Engineering log index](README.md)
