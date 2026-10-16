@@ -32,7 +32,9 @@ def sample_weight_ints(cfg: dict) -> np.ndarray:
     w = np.zeros((n, n), dtype=np.int64)
     w_int_max = 2**ww - 1
     if "weights" in cfg:
-        w = np.rint(np.asarray(cfg["weights"], dtype=np.float64) * 2**ww).astype(np.int64)
+        # cfg "weights" are already integer-lattice values (weight * 2**ww),
+        # same convention the sampled ints and the RTL ROM use.
+        w = np.rint(np.asarray(cfg["weights"], dtype=np.float64)).astype(np.int64)
     else:
         for i in range(n):
             srcs = rng.choice(n, size=fanout, replace=False)

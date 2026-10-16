@@ -28,9 +28,9 @@ def test_subthreshold_accumulation_and_decay():
                   "seed": 123, "weights": [[4]]})  # weight 0.25
     train = np.array([[1], [0], [1]], dtype=np.int8)
     out = m.run(train)
-    # step1: v = 4/16 = 0.25; step2: (4*14)>>16 = 3/16 = 0.1875; step3: 3+4 = 7/16 = 0.4375
+    # step1: v = 4/16 = 0.25; step2: (4*14)>>4 = 3/16 = 0.1875; step3: (3*14)>>4 + 4 = 6/16 = 0.375
     assert out.tolist() == [[0], [0], [0]]
-    np.testing.assert_allclose(m.get_state_v(), [0.4375], rtol=0, atol=1e-12)
+    np.testing.assert_allclose(m.get_state_v(), [0.375], rtol=0, atol=1e-12)
 
 
 def test_determinism_same_seed():
