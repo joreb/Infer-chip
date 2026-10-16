@@ -1,11 +1,10 @@
 """OpenROAD-flow-scripts docker wrapper: write_design -> run_pnr -> GDS + metrics.
 
-ORFS_ROOT points at a shallow clone of OpenROAD-flow-scripts (host side):
-    git clone --depth 1 https://github.com/The-OpenROAD-Project/OpenROAD-flow-scripts $ORFS_ROOT
-The flow runs inside the `openroad/orfs` docker image with $ORFS_ROOT and the
-design staging dir bind-mounted; results land under $ORFS_ROOT/flow/results/
-<platform>/<design>/<variant>/ (metadata.json is the metrics source — see
-parse_metrics).
+The `openroad/orfs` image carries its own prebuilt flow tree; no host clone and
+no ORFS_ROOT. Design staging (write_design output under <out_dir>/orfs/) is
+bind-mounted read-in at /mnt/design and copied into the image's flow dir inside
+the container; flow results are bind-mounted back out to <out_dir>/results/
+<design>/<variant>/ (metadata.json is the metrics source — see parse_metrics).
 """
 
 import json
@@ -110,60 +109,67 @@ def write_design(cfg: dict, out_dir: Path) -> dict:
 
 
 def run_pnr(cfg: dict, out_dir: Path, timeout_s: int = 3600) -> dict:
-    """Synthesize + place + route in ORFS docker. Returns metrics; never raises."""
+    """Synthesize + place + route in ORFS docker. Returns metrics; never raises.
+
+    The openroad/orfs image carries its own prebuilt flow tree, so nothing on
+    the host is mounted over it (mounting a host clone would shadow the image's
+    tools/install). The staged design is copied INTO the image's flow tree
+    inside the container; flow results are bind-mounted back out. Runs as root
+    (writes over the image tree) and chowns the results back to the host user.
+    """
     if shutil.which("docker") is None:
         return FAIL("docker not available")
-    orfs_root = Path(__import__("os").environ.get("ORFS_ROOT", "") or
-                     Path.home() / "OpenROAD-flow-scripts")
-    if not (orfs_root / "flow").exists():
-        return FAIL(f"ORFS_ROOT missing flow dir: {orfs_root} (shallow clone "
-                    "OpenROAD-flow-scripts and export ORFS_ROOT)")
 
     stage = write_design(cfg, Path(out_dir))
     name = stage["design_name"]
-    src = orfs_root / "flow" / "designs" / "src" / "snn_core"
-    src.mkdir(parents=True, exist_ok=True)
-    shutil.copy(stage["rtl"], src / "snn_core.v")
-    shutil.copy(Path(out_dir) / "orfs" / "snn_core.sdc", src / "snn_core.sdc")
-    cfg_dpath = orfs_root / "flow" / "designs" / PLATFORM / f"{name}.mk"
-    cfg_dpath.parent.mkdir(parents=True, exist_ok=True)
-    cfg_dpath.write_text((Path(out_dir) / "orfs" / "config.mk").read_text())
+    uid = __import__("os").getuid()
+    gid = __import__("os").getgid()
+    results_host = Path(out_dir) / "results"
+    out_results = results_host / name
+    # purge stale results (ENG-003): a previous run with the same
+    # DESIGN_NICKNAME would otherwise be parsed as this run's metrics
+    if out_results.exists():
+        shutil.rmtree(out_results)
 
     cmd = (
         "set -o pipefail; "
-        f"cd /OpenROAD-flow-scripts/flow && "
-        f"make DESIGN_CONFIG=./designs/{PLATFORM}/{name}.mk run 2>&1 | tail -5"
+        "mkdir -p flow/designs/src/snn_core flow/designs/" f"{PLATFORM}" " && "
+        f"cp /mnt/design/snn_core.v /mnt/design/snn_core.sdc flow/designs/src/snn_core/ && "
+        f"cp /mnt/design/config.mk flow/designs/{PLATFORM}/{name}.mk && "
+        f"cd flow && make DESIGN_CONFIG=./designs/{PLATFORM}/{name}.mk 2>&1 | tail -5; "
+        "rc=$?; "
+        "mkdir -p /results && "
+        f"cp -r flow/results/{PLATFORM}/{name} /results/{name}; "
+        f"chown -R {uid}:{gid} /results; exit $rc"
     )
-    uid = __import__("os").getuid()
-    gid = __import__("os").getgid()
     docker_cmd = [
-        "docker", "run", "--rm", "-u", f"{uid}:{gid}",
-        "-v", f"{orfs_root}:/OpenROAD-flow-scripts", "--workdir", "/OpenROAD-flow-scripts",
+        "docker", "run", "--rm", "-u", "0:0",  # writes over the root-owned image tree
+        "-v", f"{stage_dir(out_dir)}:/mnt/design",
+        "-v", f"{results_host}:/results",
         IMAGE, "bash", "-c", cmd,
     ]
-    # purge stale results: a previous run with the same DESIGN_NICKNAME would
-    # otherwise be parsed as this run's metrics on make failure (false pass)
-    stale_results = orfs_root / "flow" / "results" / PLATFORM / name
-    if stale_results.exists():
-        shutil.rmtree(stale_results)
-
     for attempt in range(2):
         try:
             proc = subprocess.run(docker_cmd, capture_output=True, text=True,
                                   timeout=timeout_s)
             if proc.returncode == 0:
                 break
-            reason = f"orfs make exited {proc.returncode}: {proc.stdout[-400:]}"
+            reason = (f"orfs make exited {proc.returncode}: "
+                      f"{proc.stdout[-400:]}{proc.stderr[-400:]}")
         except subprocess.TimeoutExpired:
             reason = f"orfs make timeout {timeout_s}s"
         if attempt == 1:
             return FAIL(reason)
-    results = orfs_root / "flow" / "results" / PLATFORM / name / "base"
-    m = parse_metrics(results)
+    m = parse_metrics(out_results / "base")
     if m["verdict"] == "fail":
         return m
-    out = Path(out_dir)
-    gds = results / "6_final.gds"
+    gds = out_results / "base" / "6_final.gds"
     if gds.exists():
-        shutil.copy(gds, out / "final.gds")
+        shutil.copy(gds, Path(out_dir) / "final.gds")
     return m
+
+
+def stage_dir(out_dir: Path) -> Path:
+    """Host-side design staging dir that the container reads as /mnt/design."""
+    out_dir.mkdir(parents=True, exist_ok=True)
+    return Path(out_dir) / "orfs"

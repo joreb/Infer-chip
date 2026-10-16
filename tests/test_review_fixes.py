@@ -91,6 +91,7 @@ def test_run_pnr_uses_pipefail_and_purges_stale_results(tmp_path, monkeypatch):
         class P:
             returncode = 1
             stdout = "boom"
+            stderr = ""
         return P()
 
     monkeypatch.setattr(dflow.subprocess, "run", fake_run)
@@ -101,6 +102,11 @@ def test_run_pnr_uses_pipefail_and_purges_stale_results(tmp_path, monkeypatch):
     assert m["verdict"] == "fail"  # stale metadata purged -> honest fail
     assert not stale.exists()  # purged before the run
     assert "pipefail" in captured["cmd"][-1]
+    # full flow is the default goal in this ORFS image; `run` is a per-stage
+    # helper that executes a single openroad step (a 0.15s noop and rc=0)
+    assert "make DESIGN_CONFIG=./designs/sky130hs/snn_core_32.mk" in captured["cmd"][-1]
+    assert ".mk run " not in captured["cmd"][-1]
+    assert ".mk 2>&1 | tail" in captured["cmd"][-1]
 
 
 # --- Minor 8: write_report survives flow:null --------------------------------
