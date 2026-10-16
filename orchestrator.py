@@ -52,9 +52,9 @@ def run_loop(target: str, backend: Backend, rounds: int, out_root: Path,
             cfg.update(config_override)
 
         for w in validate_config(target, cfg):
-            if w.startswith("ram-ceiling"):
-                print(f"WARNING: ram-ceiling exceeded for {target} config; "
-                      "proceeding anyway", file=sys.stderr)
+            if w.startswith("weight-memory"):
+                print(f"WARNING: {w} for {target} config; proceeding anyway",
+                      file=sys.stderr)
 
         run_dir = Path(out_root) / target / f"round_{round_i}"
         run_dir.mkdir(parents=True, exist_ok=True)

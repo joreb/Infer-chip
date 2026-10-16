@@ -51,7 +51,7 @@ def test_ram_warning_proceeds(tmp_path, monkeypatch, capsys):
     jp = orch.run_loop("digital", StubBackend(seq), rounds=1, out_root=tmp_path)
     assert jp.exists()
     err = capsys.readouterr().err
-    assert "ram" in err.lower()
+    assert "memory" in err.lower()
 
 
 def test_override_backfills_when_backend_proposes_none(tmp_path, monkeypatch):

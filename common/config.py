@@ -6,12 +6,18 @@ REQUIRED_KEYS: dict[str, list[str]] = {
     "memristive": ["xbar_rows", "xbar_cols", "variability_frac", "adc_bits"],
 }
 
-_RAM_WARN_BYTES = 5 * 1024 * 1024 * 1024  # 5 GB of a 8 GB WSL box
+_WEIGHT_MEM_WARN_BITS = 4 * 1024 * 1024  # 4 Mbit external-SRAM ballpark
 
 
-def estimate_digital_rams(cfg: dict) -> int:
-    """Bytes of synapse state a digital config needs: neurons*fanout*weight_width*timesteps."""
-    return int(cfg["neurons"]) * int(cfg["fanout"]) * int(cfg["weight_width"]) * int(cfg["timesteps"])
+def estimate_weight_memory_bits(cfg: dict) -> int:
+    """External weight SRAM (docs/openspike-memory-interface.md): pad words of
+    pad*weight_width bits. Dense by construction — the port addresses every
+    source — so fanout does not shrink it."""
+    n = int(cfg["neurons"])
+    p = 2
+    while p < n:
+        p *= 2
+    return p * p * int(cfg["weight_width"])
 
 
 def validate_config(target: str, cfg: dict) -> list[str]:
@@ -29,9 +35,10 @@ def validate_config(target: str, cfg: dict) -> list[str]:
                 "RTL compare-stage 32-bit intermediates may overflow; parity "
                 "with the golden model is not guaranteed"
             )
-        if estimate_digital_rams(cfg) > _RAM_WARN_BYTES:
+        if estimate_weight_memory_bits(cfg) > _WEIGHT_MEM_WARN_BITS:
+            bits = estimate_weight_memory_bits(cfg)
             warnings.append(
-                f"ram-ceiling: estimate {estimate_digital_rams(cfg) / 2**30:.1f} GiB exceeds 5 GiB "
-                "on this 8 GB host"
+                f"weight-memory: SRAM image {bits / 2**20:.1f} Mbit exceeds "
+                f"{_WEIGHT_MEM_WARN_BITS // 2**20} Mbit (256 neurons at ww=4 is 0.25 Mbit for scale)"
             )
     return warnings

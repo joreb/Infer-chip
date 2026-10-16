@@ -10,11 +10,15 @@ from pathlib import Path
 
 from targets.base import Target
 from targets.digital.flow import run_pnr
-from targets.digital.rtl_gen import generate_rtl, module_name
+from targets.digital.rtl_gen import generate_rtl, module_name, pad_size
+from common.config import estimate_weight_memory_bits
 
 
+# OpenSpike-informed defaults (docs/openspike-memory-interface.md): the fabric
+# is a 16-way mux over PAD*WW bus bits, short critical path — 40 ns (25 MHz)
+# is a conservative floorplan target; low utilization leaves routing room.
 DEFAULT_CFG = {"neurons": 256, "fanout": 8, "weight_width": 4, "timesteps": 64,
-               "util_target": 60, "clock_ns": 4.0}
+               "util_target": 20, "clock_ns": 40.0}
 
 
 class DigitalTarget(Target):
@@ -56,7 +60,13 @@ class DigitalTarget(Target):
         # cocotb 2.x returns the results.xml path; parse pass/fail from it
         from cocotb_tools.check_results import get_results
         num_tests, num_failed = get_results(Path(results_xml))
+        # external-interface cost metrics (peer measure list, item 6): the bus
+        # replaces the dense ROM area, so report it next to the PPA numbers
+        pad = pad_size(cfg)
+        bus_bits = pad * int(cfg["weight_width"])
         return {"verdict": "pass" if num_failed == 0 else "fail",
+                "bus_bits": bus_bits,
+                "weight_mbit": estimate_weight_memory_bits(cfg) / 2**20,
                 "reason": None if num_failed == 0 else f"{num_failed}/{num_tests} cocotb tests failed",
                 "num_tests": int(num_tests), "num_failed": int(num_failed)}
 
