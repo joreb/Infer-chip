@@ -152,6 +152,34 @@ def test_cli_api_backend_clean_message(capsys, monkeypatch):
     assert "deferred" in capsys.readouterr().err
 
 
+# --- Important 1: non-power-of-two neuron parity (Review Focus class 1) ------
+
+@pytest.mark.skipif(
+    __import__("shutil").which("iverilog") is None, reason="iverilog not installed"
+)
+def test_sim_parity_non_pow2_neurons(tmp_path):
+    """300 neurons -> PAD=512; TB injects only n sources; parity still holds."""
+    from targets.digital.rtl_gen import generate_rtl, module_name
+
+    cfg = {"neurons": 300, "fanout": 6, "weight_width": 4, "timesteps": 16,
+           "util_target": 60, "clock_ns": 4.0, "seed": 5}
+    src = tmp_path / "snn_core.v"
+    src.write_text(generate_rtl(cfg))
+
+    from cocotb_tools.runner import get_runner
+    runner = get_runner("icarus")
+    runner.build(verilog_sources=[str(src)], hdl_toplevel=module_name(cfg),
+                 build_dir=str(tmp_path / "build"))
+    results_xml = runner.test(
+        test_module="tests.digital.tb_parity", hdl_toplevel=module_name(cfg),
+        build_dir=str(tmp_path / "build"),
+        extra_env={"PARITY_CFG_JSON": json.dumps(cfg)},
+    )
+    from cocotb_tools.check_results import get_results
+    num_tests, num_failed = get_results(Path(results_xml))
+    assert num_failed == 0
+
+
 # --- Minor 6: weights docstring range — canonical helper ----------------------
 
 def test_weight_range_signed_twos_complement():

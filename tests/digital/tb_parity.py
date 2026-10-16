@@ -51,7 +51,7 @@ async def parity(dut):
     out = np.zeros((steps, n), dtype=np.int8)
     for t in range(steps):
         frame = train[t]
-        for s in range(pad):
+        for s in range(n):  # only real neurons inject; padding rows sit idle
             dut.inject_valid.value = 1
             dut.inject_addr.value = s
             dut.inject_data.value = int(frame[s])
