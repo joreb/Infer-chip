@@ -1,49 +1,59 @@
 # Agentic SNN-Chip Design Loop — SPRIND PoC
 
 **Date:** 2026-10-17
-**Status:** Approved
-**Purpose:** Proof-of-concept demonstrator for the SPRIND × NADI "AI-Native Chip Design" challenge (deadline 2026-11-30, 11:00 CET). Shows an autonomous agent loop designing a neuromorphic spiking-neural-network core from architecture search through GDSII, using the open OpenROAD flow.
+**Status:** Approved (rev 2 — multi-target)
+**Purpose:** Proof-of-concept demonstrator for the SPRIND × NADI "AI-Native Chip Design" challenge (deadline 2026-11-30, 11:00 CET). Shows one autonomous agent loop designing AI-inference chips from architecture search through layout, across three device targets: **digital CMOS (OpenROAD), photonic (inference meshes), memristive (in-memory crossbar)** — using open tooling throughout.
 
 ## Goals
 
-- End-to-end unattended loop: **agent proposes config → RTL generated → simulation gated → OpenROAD synthesis/PnR → GDS + metrics → agent learns → next round**
-- Produce proposal-grade artifacts: run journal, PPA Pareto front, GDS render, loop architecture diagram
-- Ship a minimal working slice first (256 neurons), scale via one config dict (config-driven to ~1k neurons on this 8-core / 8 GB machine)
+- One design loop, many targets: **agent proposes config → device-circuit model generated → simulation gated → flow backend → PPA metrics → agent learns → next round**
+- Digital target closes end-to-end to GDSII via OpenROAD (sky130): the headline evidence
+- Photonic and memristive targets demonstrate the same loop on physical device models with energy/latency PPA — cross-paradigm breadth is the differentiation
+- Produce proposal-grade artifacts: run journal, per-target PPA Pareto fronts, GDS render, loop architecture diagram
+- Minimal working slice first: 256-neuron digital config; every target scales via one config dict
 
 ## Non-Goals
 
-- Agents writing RTL from scratch each round (stage-1 upgrade path, same interfaces)
-- Analog/memristive/MoS2 implementations — digital LIF only for the PoC
-- Post-signoff (DRC-clean at leading edge is out of scope; sky130 open PDK evidence is sufficient)
-- Fabrication or FPGA tape-out
+- Agents writing RTL/layout from scratch each round (stage-1 upgrade path, same interfaces)
+- Fabrication or tape-out
+- EM-level photonic simulation (Meep) in the PoC — transfer-matrix circuit models suffice; Meep/SAX/gdsfactory integration is stage-1
+- Post-signoff (DRC-clean at leading edge out of scope; sky130 open-PDK evidence sufficient)
 
 ## Architecture
 
 ```
-        ┌──────────── orchestrator (CLI, round loop) ────────────┐
-        │                                                        │
-        ▼                                                        ▼
-  [arch agent] ──► config.json ──► [rtl gen] ──► core.v ──► [sim: cocotb+iverilog]
-        ▲                                                        │ pass?
-        │                                                        ▼ fail
-        │  metrics.json (area, power, slack, DRC, wirelength)   retry w/ agent fix note (≤2)
-        │                                                        ▼
-        └──────────── [PPA reporter] ◄── [ORFS docker: syn→PnR→GDS, sky130]
+        ┌────────────────── orchestrator (CLI, round loop) ──────────────────┐
+        │ target: digital | photonic | memristive   (per target: model+flow) │
+        ▼                                                                    ▼
+  [arch agent] ──► config.json ──► [target backend] ──► netlist/artifact ──► [sim gate]
+        ▲                                                                    │ pass?
+        │                                                                    ▼ fail
+        │   metrics.json (area, power, latency, energy/op)                   retry w/ fix note (≤2)
+        │                                                                    ▼
+        └────────────── [PPA reporter] ◄────────────────────── [flow backend]
 ```
 
-The orchestrator owns the loop; agents are swappable strategy providers behind a config flag.
+### Targets
 
-### Agent layer
+| Target | Device model (golden sim) | Flow backend | PoC depth |
+|---|---|---|---|
+| `digital` | Parameterized LIF fabric, numpy reference | OpenROAD-flow-scripts docker, sky130, GDS + DRC count | **Full: GDS by Nov 30** |
+| `photonic` | MZI-mesh tensor core, transfer-matrix sim (numpy/torch), energy-per-MAC model | Layout backend stubbed (gdsfactory in stage 1) | Loop + PPA: energy-per-MAC, insertion loss, footprint |
+| `memristive` | RRAM crossbar: conductance-cell model with device variability (numpy), ADC/DAC quantization | Layout backend stubbed (stage 1) | Loop + PPA: energy-per-MAC, area model, accuracy-vs-variability sweep |
 
-- `AGENTS_BACKEND=cc` — **current demo mode.** Claude Code agents drive architecture search and failure analysis. Orchestrator emits task prompts + journal path; no LLM API dependency.
-- `AGENTS_BACKEND=api` — LLM router: a task classifier selects which model (cheap for log parsing/summarizing, strong for architecture decisions) handles each task. Model roster in config. Behind flag, built after the cc demo works.
-- `AGENTS_BACKEND=stub` — deterministic scripted config list. Full pipeline runs agentless; used for tests and CI.
+Target contract (`targets/base.py`): each target implements `build(config) -> Artifact`, `simulate(artifact) -> SimVerdict`, `run_flow(artifact) -> Metrics`, shared by orchestrator. Agent layer is target-agnostic.
+
+### Agent layer (target-agnostic, swappable)
+
+- `AGENTS_BACKEND=cc` — **current demo mode.** Claude Code agents drive architecture search and failure analysis across all three targets. No LLM API dependency.
+- `AGENTS_BACKEND=api` — LLM router: task classifier selects cheap model (log parsing) or strong model (architecture decisions) per task. Roster in config. Behind flag, built after cc demo works.
+- `AGENTS_BACKEND=stub` — deterministic scripted config lists per target. Pipeline runs agentless; used for tests.
 
 Backend contract (`agents/base.py`):
 
 ```python
 class Backend:
-    def propose_config(self, journal) -> Config: ...
+    def propose_config(self, journal, target: str) -> Config: ...
     def analyze_failure(self, stage: str, logs: str, config: Config) -> FixNote: ...
 ```
 
@@ -51,61 +61,66 @@ class Backend:
 
 | Component | Job | Tech |
 |---|---|---|
-| `snn_core/rtl_gen.py` | Config dict → Verilog: parameterized LIF neuron array, synapse crossbar, spike inject/read ports | Plain Python string templating |
-| `snn_core/model.py` | Golden numpy LIF reference model | numpy only |
-| `sim/` | Cocotb testbench: spike-train parity vs golden model, latency/throughput checks | cocotb + iverilog |
-| `flow/orfs.py` | Wraps OpenROAD-flow-scripts docker: mounts design, patches config.mk, runs synth→PnR→GDS on sky130, parses metrics (area, power, worst slack, DRC count, wirelength) | Python + docker CLI |
-| `agents/` | Backend interface + cc / api-router / stub implementations | Python |
-| `orchestrator.py` | Round loop, bounded retries, budget, journal | CLI |
-| `runs/<round>/` | Per-round Verilog, logs, metrics.json | — |
-
-Config surface: `neurons`, `fanout`, `weight_width`, `timesteps`, `util_target`, `clock_ns`. The 256-neuron smoke config ships with the repo.
+| `targets/digital/rtl_gen.py` | Config dict → Verilog: LIF neuron array, synapse crossbar, spike inject/read ports | Python string templating |
+| `targets/digital/model.py` | Golden numpy LIF reference | numpy |
+| `targets/digital/flow.py` | ORFS docker wrapper: synth→PnR→GDS on sky130, parse area/power/slack/DRC | Python + docker CLI |
+| `targets/photonic/mesh.py` | MZI-mesh transfer-matrix model, energy-per-MAC PPA | numpy/torch |
+| `targets/memristive/crossbar.py` | RRAM crossbar model, variability + ADC/DAC quantization, energy/area PPA | numpy |
+| `sim/` | Cocotb testbench (digital): spike-train parity vs golden, latency/throughput | cocotb + iverilog |
+| `agents/` | Backend interface + cc / api-router / stub | Python |
+| `orchestrator.py` | Round loop per target, bounded retries, budget, journal | CLI |
+| `runs/<target>/<round>/` | Per-round artifacts, logs, metrics.json | — |
 
 ## Data Flow
 
 `journal.jsonl` is the spine. Each round appends one record:
 
 ```json
-{"round": 4, "config": {...}, "sim": {"verdict": "pass", "max_err": 0}, "pnr": {"verdict": "pass",
- "area": 0.031, "power_w": 0.042, "worst_slack": 0.11, "drc": 0}, "agent_note": "..."}
+{"round": 4, "target": "memristive", "config": {...},
+ "sim": {"verdict": "pass", "max_err": 0.003},
+ "flow": {"verdict": "pass", "area_mm2": 0.031, "pwr_w": 0.042,
+         "energy_per_mac_pj": 0.9, "drc": 0},
+ "agent_note": "..."}
 ```
 
-The Pareto front (silicon area vs energy-per-spike) is derived from the journal. Failures never block the loop: a stage failure is a bounded retry (≤2, with agent fix note), then the round is skipped with the reason recorded.
+Pareto fronts derived per target from the journal (area vs energy-per-op; photonic: footprint vs energy-per-MAC; memristive: accuracy-loss vs energy-per-MAC). Failures never block the loop: bounded retry (≤2, with agent fix note), then round skipped with reason.
 
 ## Error Handling
 
-- Stub backend lets the whole pipeline run without any LLM
-- ORFS docker run gets a timeout + one retry
-- Config gate warns when a config likely exceeds the 8 GB WSL memory ceiling
-- Stage failures become verdict objects in the journal — data, not exceptions
+- Stub backend runs pipeline with no LLM
+- ORFS docker timeout + one retry
+- Config gate warns when digital config likely exceeds 8 GB WSL memory
+- Stage failures become verdict objects — data, not exceptions
 
 ## Testing
 
-1. Golden-model unit test — fixed seeds, known spike patterns
-2. RTL parity test — cocotb sim matches golden model on random spike trains
-3. ORFS wrapper test — run one ORFS bundled example design, assert metrics parse
-4. Orchestrator smoke — stub agents, 2 rounds, tiny config; assert journal + Pareto report produced
+1. Golden-model unit tests per target — fixed seeds, known stimulus/response
+2. RTL parity test — cocotb sim matches golden LIF model on random spike trains
+3. ORFS wrapper test — run one ORFS bundled example, assert metrics parse
+4. Orchestrator smoke — stub agents, 2 rounds, tiny config per target; assert journal + Pareto reports
 
 ## Deliverables (before 2026-11-30)
 
-1. Unattended multi-round run log (journal.jsonl with ≥5 rounds)
-2. PPA Pareto front chart (area vs energy-per-spike)
-3. One GDS render of the best config
-4. One-page loop architecture diagram
-5. This spec + implementation plan, referenced in the SPRIND application as feasibility evidence
+1. Unattended multi-round run log (journal.jsonl, ≥5 rounds per target)
+2. PPA Pareto fronts — digital to GDS; photonic + memristive on device models
+3. GDS render of best digital config
+4. One-page loop architecture diagram (one loop, three targets)
+5. Stage-1 roadmap: RTL-from-scratch agents, gdsfactory/Meep/SAX photonic layout closure, memristive array layout
 
 ## Environment
 
 - WSL2, 8 cores, 8 GB RAM, 58 GB disk free
-- Docker 28.5.2 present; OpenROAD-flow-scripts via docker (first build downloads multi-GB PDK)
-- No EDA tools on host; iverilog + cocotb installed into a uv venv
+- Docker 28.5.2 present; ORFS via docker (first build downloads multi-GB PDK)
+- No EDA tools on host; iverilog + cocotb in a uv venv
 - sky130 open PDK, no NDA artifacts
+- Photonic reference material: Sacher/ALPS, Fraunhofer HHI PIC deck, existing Meep scripts and ring-resonator GDS in SPRIND research folder
 
 ## Risks
 
 | Risk | Mitigation |
 |---|---|
 | 8 GB RAM ceiling in PnR | Config gate; 256-neuron smoke config closes comfortably |
-| Agents emit bad configs | Sim gate before any synthesis spend; bounded retries |
+| Three-target breadth eats calendar | Digital is the only GDS commitment; other two are model-level (numpy) — deliberately cheap |
+| Agents emit bad configs | Sim gate before synthesis spend; bounded retries |
 | ORFS docker bandwidth | One-time multi-GB pull, cached thereafter |
-| LLM API cost (api backend) | Stub + cc backends carry the whole demo; api router optional |
+| LLM API cost (api backend) | Stub + cc backends carry the demo; api router optional |
