@@ -82,12 +82,11 @@ def write_design(cfg: dict, out_dir: Path) -> dict:
     rtl.write_text(generate_rtl(cfg))
     config = stage / "config.mk"
     config.write_text(
-        f"export DESIGN_NAME = {name}\n"
-        f"export DESIGN_NICKNAME = {name}\n"
-        "export DESIGN_TOPLEVEL = snn_core\n"
+        "export DESIGN_NAME = snn_core\n"  # must equal top module exactly
+        f"export DESIGN_NICKNAME = {name}\n"  # names the results dir
         f"export PLATFORM = {PLATFORM}\n"
-        "export VERILOG_FILES = ./designs/src/snn_core_v/snn_core.v\n"
-        "export SDC_FILE = ./designs/src/snn_core_v/snn_core.sdc\n"
+        "export VERILOG_FILES = ./designs/src/snn_core/snn_core.v\n"
+        "export SDC_FILE = ./designs/src/snn_core/snn_core.sdc\n"
         f"export CORE_UTILIZATION = {cfg.get('util_target', 60)}\n"
         f"export CLOCK_PERIOD = {float(cfg.get('clock_ns', 4.0))}\n"
         "export CLOCK_PORT = clk\n"
@@ -111,8 +110,7 @@ def run_pnr(cfg: dict, out_dir: Path, timeout_s: int = 3600) -> dict:
 
     stage = write_design(cfg, Path(out_dir))
     name = stage["design_name"]
-    vname = f"{name}_v"
-    src = orfs_root / "flow" / "designs" / "src" / vname
+    src = orfs_root / "flow" / "designs" / "src" / "snn_core"
     src.mkdir(parents=True, exist_ok=True)
     shutil.copy(stage["rtl"], src / "snn_core.v")
     shutil.copy(Path(out_dir) / "orfs" / "snn_core.sdc", src / "snn_core.sdc")
@@ -121,11 +119,12 @@ def run_pnr(cfg: dict, out_dir: Path, timeout_s: int = 3600) -> dict:
 
     cmd = (
         f"cd /OpenROAD-flow-scripts/flow && "
-        f"make DESIGN_CONFIG=./designs/{PLATFORM}/{name}.mk run -j0 2>&1 "
-        "| tail -5"
+        f"make DESIGN_CONFIG=./designs/{PLATFORM}/{name}.mk run 2>&1 | tail -5"
     )
+    uid = __import__("os").getuid()
+    gid = __import__("os").getgid()
     docker_cmd = [
-        "docker", "run", "--rm", "-u", str(__import__("os").getuid()),
+        "docker", "run", "--rm", "-u", f"{uid}:{gid}",
         "-v", f"{orfs_root}:/OpenROAD-flow-scripts", "--workdir", "/OpenROAD-flow-scripts",
         IMAGE, "bash", "-c", cmd,
     ]

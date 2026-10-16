@@ -37,7 +37,8 @@ def test_write_design_creates_config_and_rtl(tmp_path):
     conf = (tmp_path / "orfs" / "config.mk").read_text()
     rtl = tmp_path / "orfs" / "snn_core.v"
     assert rtl.exists() and conf
-    assert "DESIGN_NAME = snn_core_256" in conf
+    assert "DESIGN_NAME = snn_core\n" in conf
+    assert "DESIGN_NICKNAME = snn_core_256" in conf
     assert "sky130hs" in conf
     assert "CORE_UTILIZATION = 60" in conf
     assert "CLOCK_PERIOD = 4.0" in conf
