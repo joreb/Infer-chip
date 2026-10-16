@@ -30,7 +30,8 @@ def sample_weight_ints(cfg: dict) -> np.ndarray:
     ww = int(cfg["weight_width"])
     rng = np.random.default_rng(cfg.get("seed", 1))
     w = np.zeros((n, n), dtype=np.int64)
-    w_int_max = 2**ww - 1
+    # Signed WW-bit two's-complement range: +-2**(ww-1)-1 (WW=4 -> +-7).
+    w_int_max = 2 ** (ww - 1) - 1
     if "weights" in cfg:
         # cfg "weights" are already integer-lattice values (weight * 2**ww),
         # same convention the sampled ints and the RTL ROM use.
