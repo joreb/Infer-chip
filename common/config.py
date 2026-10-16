@@ -23,6 +23,12 @@ def validate_config(target: str, cfg: dict) -> list[str]:
         if key not in cfg:
             warnings.append(f"missing-key:{key}")
     if target == "digital" and all(k in cfg for k in REQUIRED_KEYS["digital"]):
+        if int(cfg["weight_width"]) > 8:
+            warnings.append(
+                f"weight_width:{int(cfg['weight_width'])} exceeds 8 bits — "
+                "RTL compare-stage 32-bit intermediates may overflow; parity "
+                "with the golden model is not guaranteed"
+            )
         if estimate_digital_rams(cfg) > _RAM_WARN_BYTES:
             warnings.append(
                 f"ram-ceiling: estimate {estimate_digital_rams(cfg) / 2**30:.1f} GiB exceeds 5 GiB "

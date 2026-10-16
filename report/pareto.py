@@ -21,7 +21,7 @@ def _num(v) -> float | None:
 
 def _metric(rec: dict, key: str) -> float | None:
     for section in ("flow", "sim"):
-        v = _num(rec.get(section, {}).get(key))
+        v = _num((rec.get(section) or {}).get(key))
         if v is not None:
             return v
     return None
@@ -86,11 +86,11 @@ def write_report(journal_path: Path, out_md: Path) -> Path:
         lines.append("|---|---|---|---|---|---|")
         for e in recs:
             cfg = json.dumps(e.get("config", {}), default=str)
-            sim = e.get("sim", {}).get("verdict", "?")
-            flow = e.get("flow", {}).get("verdict", "?")
-            flowm = {k: v for k, v in e.get("flow", {}).items()
+            sim = (e.get("sim") or {}).get("verdict", "?")
+            flow = (e.get("flow") or {}).get("verdict", "?")
+            flowm = {k: v for k, v in (e.get("flow") or {}).items()
                      if k != "verdict" and v is not None}
-            simm = {k: v for k, v in e.get("sim", {}).items()
+            simm = {k: v for k, v in (e.get("sim") or {}).items()
                     if k != "verdict" and v is not None}
             metrics = json.dumps({**simm, **flowm}, default=str)
             note = (e.get("agent_note") or "").replace("|", "\\|")

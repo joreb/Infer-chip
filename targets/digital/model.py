@@ -18,12 +18,19 @@ DECAY_SHIFT = 4
 NEURON_DEFAULTS = {"threshold": 1.0, "rest": 0.0, "leak": 0.0}
 
 
+def weight_range(weight_width: int) -> tuple[int, int]:
+    """Signed WW-bit two's-complement weight range (WW=4 -> (-8, +7))."""
+    return -(2 ** (weight_width - 1)), 2 ** (weight_width - 1) - 1
+
+
 def sample_weight_ints(cfg: dict) -> np.ndarray:
     """Sparse int weight matrix [N, N]: <=fanout nonzero sources per row.
 
-    Integers in +/-(2**weight_width - 1); RTL emits these verbatim, the golden
-    model divides by 2**weight_width. An explicit "weights" cfg key (ints or
-    floats, [N][N]) overrides sampling (scaled by 2**ww back to ints).
+    Integers must fit signed WW-bit two's complement: ±2**(ww-1)-1
+    (weight_range(ww)) — wider values get sign-truncated by the RTL ROM.
+    The golden model divides by 2**weight_width. An explicit "weights" cfg
+    key (ints or floats, [N][N]) overrides sampling (scaled by 2**ww back
+    to ints).
     """
     n = int(cfg["neurons"])
     fanout = min(int(cfg["fanout"]), n)

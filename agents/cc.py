@@ -43,8 +43,12 @@ class CcBackend(Backend):
                 return rec["config"]
         return None
 
-    @staticmethod
-    def _last_json(text: str) -> dict | None:
+    _INT_KEYS = ("neurons", "fanout", "weight_width", "timesteps",
+                 "util_target", "mesh_depth", "precision_bits",
+                 "xbar_rows", "xbar_cols", "adc_bits")
+    _FLOAT_KEYS = ("variability_frac", "clock_ns", "laser_mw", "wavelength_nm")
+
+    def _last_json(self, text: str) -> dict | None:
         if not text:
             return None
         last = None
@@ -58,16 +62,19 @@ class CcBackend(Backend):
         return last
 
     def _coerce(self, cfg: dict, target: str) -> dict:
+        # bad-typed values (null / unparseable strings) raise here; callers
+        # treat any coercion failure as "no valid config" (fallback path)
         out = {}
         for k, v in cfg.items():
-            if k in ("neurons", "fanout", "weight_width", "timesteps",
-                     "util_target", "mesh_depth", "precision_bits",
-                     "xbar_rows", "xbar_cols", "adc_bits"):
-                out[k] = int(float(v))
-            elif k == "variability_frac":
-                out[k] = float(v)
-            else:
-                out[k] = v
+            try:
+                if k in self._INT_KEYS:
+                    out[k] = int(float(v))
+                elif k in self._FLOAT_KEYS:
+                    out[k] = float(v)
+                else:
+                    out[k] = v
+            except (TypeError, ValueError):
+                return {}
         return out
 
     def propose_config(self, journal_tail: list[dict], target: str) -> dict | None:
@@ -87,8 +94,11 @@ class CcBackend(Backend):
         cfg = None
         if out:
             last = self._last_json(out)
-            if last is not None and all(k in last for k in REQUIRED_KEYS[target]):
-                cfg = self._coerce(last, target)
+            if last is not None:
+                coerced = self._coerce(last, target)
+                # coercion failure -> {} -> fallback; keys re-checked post-coerce
+                if coerced and all(k in coerced for k in REQUIRED_KEYS[target]):
+                    cfg = coerced
         return cfg if cfg is not None else self._fallback(journal_tail, target)
 
     def analyze_failure(self, stage: str, logs: str, cfg: dict) -> str:

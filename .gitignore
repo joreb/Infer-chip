@@ -6,3 +6,4 @@ venv/
 runs/
 *.vcd
 *.vp
+reference/

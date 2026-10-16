@@ -25,9 +25,20 @@ FAIL = lambda reason: {  # noqa: E731
 }
 
 
-def _pick(d: dict, pattern: str, exclude: str | None = None):
+def _num(v) -> float | None:
+    """Coerce a metric value; non-numeric (e.g. "N/A") -> None, never raises."""
+    try:
+        f = float(v)
+    except (TypeError, ValueError):
+        return None
+    return None if f != f else f  # NaN filter
+
+
+def _pick_num(d: dict, pattern: str, exclude: str | None = None):
+    """First NUMERIC value under a metric-key pattern (skips "N/A" strings,
+    keys like __percent/__period, and any non-numeric metric)."""
     for k, v in d.items():
-        if pattern in k and (exclude is None or exclude not in k):
+        if pattern in k and (exclude is None or exclude not in k) and _num(v) is not None:
             return v
     return None
 
@@ -48,28 +59,28 @@ def parse_metrics(results_dir: Path) -> dict:
 
     def first(*preds):
         for pat, ex in preds:
-            v = _pick(md, pat, exclude=ex)
+            v = _pick_num(md, pat, exclude=ex)
             if v is not None:
                 return v
         return None
 
-    slack = first(("timing__setup__ws", "percent"), ("__setup__ws", None))
+    slack = first(("timing__setup__ws", "percent"), ("__setup__ws", "percent"))
     pwr = first(("power__total", None))
     drc = first(("drc_errors", None), ("design__violations", None))
     area = first(("instance__area__stdcell", None), ("instance__area", None))
     wl = first(("wirelength__estimated", None), ("wirelength", "__min"))
-    if slack is None:
-        data = FAIL("no setup slack metric in metadata.json")
-        return data
+    slack_n = _num(slack)
+    if slack_n is None:
+        return FAIL("no setup slack metric in metadata.json")
     return {
         "verdict": "pass",
         "reason": None,
-        "worst_slack_ns": float(slack),
-        "pwr_w": float(pwr) if pwr is not None else None,
+        "worst_slack_ns": slack_n,
+        "pwr_w": _num(pwr),
         "drc": int(drc) if drc is not None else None,
         # ORFS areas are um^2
-        "area_mm2": float(area) / 1e6 if area is not None else None,
-        "wirelength_um": float(wl) if wl is not None else None,
+        "area_mm2": _num(area) / 1e6 if _num(area) is not None else None,
+        "wirelength_um": _num(wl),
     }
 
 
@@ -115,9 +126,11 @@ def run_pnr(cfg: dict, out_dir: Path, timeout_s: int = 3600) -> dict:
     shutil.copy(stage["rtl"], src / "snn_core.v")
     shutil.copy(Path(out_dir) / "orfs" / "snn_core.sdc", src / "snn_core.sdc")
     cfg_dpath = orfs_root / "flow" / "designs" / PLATFORM / f"{name}.mk"
+    cfg_dpath.parent.mkdir(parents=True, exist_ok=True)
     cfg_dpath.write_text((Path(out_dir) / "orfs" / "config.mk").read_text())
 
     cmd = (
+        "set -o pipefail; "
         f"cd /OpenROAD-flow-scripts/flow && "
         f"make DESIGN_CONFIG=./designs/{PLATFORM}/{name}.mk run 2>&1 | tail -5"
     )
@@ -128,6 +141,12 @@ def run_pnr(cfg: dict, out_dir: Path, timeout_s: int = 3600) -> dict:
         "-v", f"{orfs_root}:/OpenROAD-flow-scripts", "--workdir", "/OpenROAD-flow-scripts",
         IMAGE, "bash", "-c", cmd,
     ]
+    # purge stale results: a previous run with the same DESIGN_NICKNAME would
+    # otherwise be parsed as this run's metrics on make failure (false pass)
+    stale_results = orfs_root / "flow" / "results" / PLATFORM / name
+    if stale_results.exists():
+        shutil.rmtree(stale_results)
+
     for attempt in range(2):
         try:
             proc = subprocess.run(docker_cmd, capture_output=True, text=True,

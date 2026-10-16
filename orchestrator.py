@@ -58,7 +58,11 @@ def run_loop(target: str, backend: Backend, rounds: int, out_root: Path,
 
         run_dir = Path(out_root) / target / f"round_{round_i}"
         run_dir.mkdir(parents=True, exist_ok=True)
-        result = tgt.evaluate(cfg, run_dir)
+        try:
+            result = tgt.evaluate(cfg, run_dir)
+        except Exception as exc:  # OOM, missing tool, whatever: a verdict, never out of the loop
+            result = {"sim": {"verdict": "fail", "reason": f"{type(exc).__name__}: {exc}"},
+                      "flow": {"verdict": "skipped", "reason": "sim failed"}}
 
         failed_stage = next((s for s in ("sim", "flow")
                              if result.get(s, {}).get("verdict") == "fail"), None)
@@ -87,7 +91,12 @@ def main() -> None:
     backend = StubBackend() if args.backend == "stub" else None
     if backend is None:
         from agents.base import get_backend
-        backend = get_backend(args.backend, journal_path=Path(args.out) / args.target / "journal.jsonl")
+        try:
+            backend = get_backend(args.backend,
+                                  journal_path=Path(args.out) / args.target / "journal.jsonl")
+        except KeyError as exc:  # e.g. "api" deferred to stage-1
+            print(f"error: {exc.args[0]}", file=sys.stderr)
+            raise SystemExit(2)
     jp = run_loop(args.target, backend, args.rounds, Path(args.out), override)
     print(f"journal: {jp}")
 
