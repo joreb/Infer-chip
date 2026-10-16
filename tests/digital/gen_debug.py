@@ -3,7 +3,7 @@ from pathlib import Path
 
 import numpy as np
 
-from targets.digital.model import LIFModel, sample_weight_ints
+from targets.digital.model import LIFModel, sample_weight_ints, weight_words
 from targets.digital.rtl_gen import generate_rtl, module_name
 
 CFG = {"neurons": 8, "fanout": 3, "weight_width": 4, "timesteps": 12,
@@ -11,7 +11,8 @@ CFG = {"neurons": 8, "fanout": 3, "weight_width": 4, "timesteps": 12,
 
 d = Path("/tmp/dbg"); d.mkdir(exist_ok=True)
 (d / "c.v").write_text(generate_rtl(CFG))
-(d / "weights.txt").write_text(str(sample_weight_ints(CFG).tolist()))
+(d / "weights.txt").write_text(f"row-major ints: {sample_weight_ints(CFG).tolist()}\n"
+                               f"SRAM words: {weight_words(CFG)}")
 m = LIFModel(CFG)
 train = np.zeros((12, 8), dtype=np.int8)
 train[1::2, 3] = 1

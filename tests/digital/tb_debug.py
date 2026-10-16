@@ -1,4 +1,4 @@
-"""Debug TB: per-timestep sim-v vs golden-v state comparison."""
+"""Debug TB: per-timestep sim-v vs golden-v state comparison (memory interface)."""
 
 import json
 import os
@@ -10,7 +10,7 @@ from cocotb.triggers import RisingEdge, Timer
 import numpy as np
 
 from targets.digital.model import LIFModel
-from targets.digital.rtl_gen import pad_size
+from targets.digital.rtl_gen import PH_IDLE, pad_size, weight_words
 
 
 @cocotb.test()
@@ -22,27 +22,38 @@ async def vtrace(dut):
     model = LIFModel(cfg)
     train = np.zeros((steps, n), dtype=np.int8)
     train[1::2, 7 % n] = 1
+    words = weight_words(cfg)
+
+    async def sram():
+        while True:
+            await RisingEdge(dut.clk)
+            a = int(dut.w_read_sram_addr.value)
+            if a < pad:
+                dut.w_read_sram.value = words[a]
 
     cocotb.start_soon(Clock(dut.clk, 2, "ns").start())
     dut.rst_n.value = 0
-    dut.inject_valid.value = 0
+    dut.timestep_start.value = 0
+    dut.in_spk.value = 0
+    dut.w_read_sram.value = 0
     for _ in range(2):
         await RisingEdge(dut.clk)
     dut.rst_n.value = 1
     await RisingEdge(dut.clk)
+    cocotb.start_soon(sram())
 
     for t in range(steps):
         frame = train[t]
-        for s in range(n):
-            dut.inject_valid.value = 1
-            dut.inject_addr.value = s
-            dut.inject_data.value = int(frame[s])
-            await RisingEdge(dut.clk)
-        dut.inject_valid.value = 0
+        spikes = sum(int(frame[s]) << s for s in range(n))
+        dut.in_spk.value = spikes
+        dut.timestep_start.value = 1
         await RisingEdge(dut.clk)
-        for _ in range(pad + 2):
+        dut.timestep_start.value = 0
+        while True:
             await RisingEdge(dut.clk)
             await Timer(1, "ns")
+            if int(dut.phase.value) == PH_IDLE:
+                break
         # read internal v array (icarus VPI supports hierarchical array access)
         sim_v = []
         for i in range(n):

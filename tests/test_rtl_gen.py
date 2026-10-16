@@ -27,9 +27,17 @@ def test_non_pow2_pads_to_next_pow2():
 
 def test_fixed_ports_present():
     text = generate_rtl(CFG256)
-    for port in ("clk", "rst_n", "inject_valid", "inject_addr", "inject_data",
-                 "spike_out_valid", "spike_out_addr", "spike_out_data"):
+    for port in ("clk", "rst_n", "timestep_start", "in_spk", "w_read_sram",
+                 "w_read_sram_addr", "spike_out_valid", "spike_out_addr",
+                 "spike_out_data"):
         assert port in text, port
+
+
+def test_no_embedded_weight_memory():
+    """Weights are external (docs/openspike-memory-interface.md): no dense ROM."""
+    text = generate_rtl(CFG256)
+    assert "rom_word" not in text
+    assert "function" not in text  # the old case-tree ROM function is gone
 
 
 def test_deterministic_identical_weights():
