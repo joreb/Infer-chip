@@ -44,3 +44,11 @@ def test_metric_keys_and_feasibility_bounds():
     assert set(m) == {"energy_per_mac_pj", "loss_db", "footprint_mm2", "max_err", "verdict"}
     assert m["verdict"] == "pass"
     assert m["energy_per_mac_pj"] > 0 and m["footprint_mm2"] > 0
+
+def test_diag_encode_stays_2d():
+    # pins ENG-001: np.diag(2-D) silently returns the 1-D diagonal vector and
+    # np.diagflat(2-D) flattens to n*n; the diagonal encode matrix in the mesh
+    # must stay (n, n) or the unitary cascade broadcasts wrongly
+    out, m = MeshModel(CFG).run(INPUTS, WEIGHTS)
+    assert out.shape == INPUTS.shape
+    assert np.isfinite(out).all()

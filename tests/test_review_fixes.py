@@ -76,6 +76,7 @@ def test_evaluate_exception_becomes_fail_verdict(tmp_path, monkeypatch):
 
 
 # --- Important 2: pipefail in docker cmd + stale results purged pre-run ------
+# pins ENG-003
 
 def test_run_pnr_uses_pipefail_and_purges_stale_results(tmp_path, monkeypatch):
     orfs = tmp_path / "orfs"
@@ -153,6 +154,7 @@ def test_cli_api_backend_clean_message(capsys, monkeypatch):
 
 
 # --- Important 1: non-power-of-two neuron parity (Review Focus class 1) ------
+# pins ENG-002 (exercises the cocotb check_results import) and ENG-004
 
 @pytest.mark.skipif(
     __import__("shutil").which("iverilog") is None, reason="iverilog not installed"
