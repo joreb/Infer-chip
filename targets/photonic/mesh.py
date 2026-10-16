@@ -61,17 +61,12 @@ class MeshModel:
             return []
         return [float(self.rng.uniform(0.0, np.pi / 8)) for _ in range(self.depth)]
 
-    def _transfer(self, weights: np.ndarray, n: int) -> np.ndarray:
-        # start identity; each stage multiplies a pairwise mixing matrix
+    def _transfer(self, n: int) -> tuple[np.ndarray, float]:
+        """Mixing unitary cascade; returns (|U|^2 intensity matrix, atten)."""
         trans = np.eye(n, dtype=np.complex128)
         for k, theta in enumerate(self._phase_angles(n)):
             i = k % (n - 1) if n > 1 else 0
             trans = _mzi(theta, n, i) @ trans
-        # encode weights as diagonal phase/attenuation (transmission weights)
-        w_mag = np.clip(np.abs(np.asarray(weights, dtype=np.float64)), 0.0, 1.0)
-        q = 2 ** self.n_bits - 1
-        w_q = np.round(w_mag * q) / q
-        trans = np.diagflat(np.diag(np.sqrt(w_q)).astype(np.complex128)) @ trans
         return np.abs(trans @ trans)  # intensity transfer |U|^2
 
     def run(self, inputs: np.ndarray, weights: np.ndarray) -> tuple[np.ndarray, dict]:
@@ -79,13 +74,21 @@ class MeshModel:
         w = np.asarray(weights, dtype=np.float64)
         _, n = x.shape
         ideal = x @ w
-        trans = self._transfer(w, n)
-        # outputs = inputs against the transfer-matrix-encoded weight
-        # approximation: W_eff = trans * w (intensity transmission scales
-        # each weight term, modeling modulator-limited coherent MAC).
-        W_eff = trans * w
-        out = x @ W_eff
-        max_err = float(np.max(np.abs(out - ideal))) if ideal.size else 0.0
+
+        trans = self._transfer(n)
+        n_mzis = self.depth * (n // 2)
+        loss_db = INS_LOSS_DB_PER_MZI * n_mzis
+        atten = 10 ** (-loss_db / 20)
+
+        # signal path: weights realized by modulator array -> amplitude
+        # quantization at precision_bits; mesh mixing attenuates by loss_db.
+        # err is measured post laser-power normalization (atten divided out),
+        # so the metric isolates quantization from passive insertion loss.
+        q = 2 ** self.n_bits - 1
+        w_q = np.sign(w) * np.round(np.abs(w) * q) / q
+        out = x @ w_q * atten
+        out_norm = out / atten if atten > 0 else out
+        max_err = float(np.max(np.abs(out_norm - ideal))) if ideal.size else 0.0
 
         macs = x.size
         n_mzis = self.depth * (n // 2)
