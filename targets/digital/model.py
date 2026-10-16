@@ -51,6 +51,33 @@ def sample_weight_ints(cfg: dict) -> np.ndarray:
     return w
 
 
+def weight_words(cfg: dict) -> list[int]:
+    """External weight-SRAM image, OpenSpike-style (docs/openspike-memory-interface.md).
+
+    Word[s] = concat(w_int[i][s] at bits [i*WW +: WW]) for pad sources too
+    (pad words are all zero). The TB models external SRAM with this list; the
+    fabric itself holds no weight memory.
+    """
+    n = int(cfg["neurons"])
+    ww = int(cfg["weight_width"])
+    pad = _next_pow2(max(n, 2))
+    w = sample_weight_ints(cfg)
+    w_full = np.zeros((n, pad), dtype=np.int64)  # [target][source], pad zero cols
+    w_full[:, :n] = w
+    mask = 2**ww - 1
+    return [
+        sum((int(w_full[i, s]) & mask) << (i * ww) for i in range(n))
+        for s in range(pad)
+    ]
+
+
+def _next_pow2(n: int) -> int:
+    p = 2
+    while p < n:
+        p *= 2
+    return p
+
+
 def sample_weights(cfg: dict) -> np.ndarray:
     """Float view of the sampled weights (golden model / report use)."""
     return sample_weight_ints(cfg) / 2 ** int(cfg["weight_width"])
