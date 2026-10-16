@@ -4,7 +4,7 @@ One agentic design loop, three device targets, journal + Pareto evidence.
 
 | target | sim | flow (PPA) |
 |---|---|---|
-| `digital` | LIF fabric RTL (Yosys/iverilog, cocotb bit-exact parity vs golden model) | OpenROAD-flow-scripts docker → sky130hs GDS |
+| `digital` | LIF fabric RTL (Yosys/iverilog, cocotb bit-exact parity vs golden model), weights external via OpenSpike-compatible SRAM port | OpenROAD-flow-scripts docker → sky130hs GDS |
 | `photonic` | MZI-mesh transfer-matrix model (numpy) | model PPA: energy/MAC, loss, footprint |
 | `memristive` | RRAM crossbar + ADC quantization (numpy) | model PPA: energy/MAC, area, rel error |
 
@@ -18,10 +18,9 @@ uv run python orchestrator.py --target photonic --backend stub --rounds 3 \
 uv run python orchestrator.py --target memristive --backend stub --rounds 3 \
     --seed-config '{"xbar_rows": 32, "xbar_cols": 32, "variability_frac": 0.05, "adc_bits": 8}'
 
-# digital, needs iverilog + docker + ORFS shallow clone (see targets/digital/flow.py docstring):
-#   git clone --depth 1 https://github.com/The-OpenROAD-Project/OpenROAD-flow-scripts ~/OpenROAD-flow-scripts
+# digital, needs iverilog + docker (see targets/digital/flow.py docstring).
+# The openroad/orfs image carries the whole flow: no ORFS clone, no ORFS_ROOT.
 #   docker pull openroad/orfs:latest
-#   export ORFS_ROOT=~/OpenROAD-flow-scripts
 uv run python orchestrator.py --target digital --backend stub --rounds 3 \
     --seed-config "$(cat examples/digital_128.json)"
 
@@ -40,6 +39,10 @@ Artifacts: `runs/<target>/journal.jsonl` (one record per round: config, sim,
 flow, agent_note), `runs*/report_*.md` + `pareto_*.png`.
 
 Demo evidence captured 2026-10-17: digital 128-neuron sim parity PASS ×3
-(flow awaiting docker), photonic + memristive full pass ×3,
+(ORFS PnR in flight), photonic + memristive full pass ×3,
 cc backend 5 rounds with distinct configs exploring the design space
 (`runs_cc/report_photonic.md`).
+
+Architecture notes: `docs/openspike-memory-interface.md` (external weight
+memory port, the fabric holds no weights), `wiki/engineering/` (bugs and
+fixes, one page per incident).
