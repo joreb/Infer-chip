@@ -1,0 +1,13 @@
+{
+  "run__flow__design": "snn_core_256",
+  "run__flow__platform": "sky130hs",
+  "finish__timing__setup__ws": 0.1132,
+  "finish__timing__setup__ws__period": 4.0,
+  "finish__power__total": 4.24e-3,
+  "route__drc_errors": 0,
+  "finish__design__instance__area__stdcell": 31240.55,
+  "route__wirelength__estimated": 58400.72,
+  "finish__timing__tns": -0.5,
+  "synth__design__instance__area": 30010.20,
+  "place__core__area_west": 32000.0
+}
