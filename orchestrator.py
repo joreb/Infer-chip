@@ -34,9 +34,9 @@ def run_loop(target: str, backend: Backend, rounds: int, out_root: Path,
 
     for round_i in range(rounds):
         proposed = backend.propose_config(journal.tail(5), target)
-        if proposed is None and cfg is not None:
-            break  # backend says stop (None after first round only ends loop)
-        candidate = proposed if proposed is not None else cfg
+        if proposed is None and not config_override and cfg is not None:
+            break  # backend says stop; config_override backfills per Task 14 ruling
+        candidate = proposed if isinstance(proposed, dict) else cfg
 
         if _valid(target, candidate):
             cfg = dict(candidate)

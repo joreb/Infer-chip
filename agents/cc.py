@@ -18,16 +18,19 @@ _JSON_RE = re.compile(r"\{[^{}]*\}", re.DOTALL)
 
 class CcBackend(Backend):
     def __init__(self, journal_path: Path, binary: str = "claude",
-                 timeout_s: int = 600):
+                 timeout_s: int = 600, model: str = "sonnet"):
         self.journal_path = Path(journal_path)
         self.binary = binary
         self.timeout_s = timeout_s
+        # headless claude -p fails on nonstandard default-model aliases; an
+        # explicit --model sidesteps the "model may not exist" error
+        self.model = model
 
     def _shell(self, prompt: str) -> str | None:
         try:
             proc = subprocess.run(
-                [self.binary, "-p", prompt], capture_output=True, text=True,
-                timeout=self.timeout_s)
+                [self.binary, "-p", prompt, "--model", self.model],
+                capture_output=True, text=True, timeout=self.timeout_s)
         except (subprocess.TimeoutExpired, OSError):
             return None
         if proc.returncode != 0:
@@ -70,11 +73,15 @@ class CcBackend(Backend):
     def propose_config(self, journal_tail: list[dict], target: str) -> dict | None:
         keys = ", ".join(REQUIRED_KEYS[target])
         hist = json.dumps(journal_tail[-5:], default=str)
+        prev = journal_tail[-1].get("config") if journal_tail else None
         prompt = (
             f"You are the agent in an autonomous chip-design loop, target={target}.\n"
             f"Journal (last rounds): {hist}\n"
+            f"Previous config: {json.dumps(prev) if prev else 'none'}\n"
             f"Propose the NEXT config as a single flat JSON object with exactly these keys: {keys}. "
-            "Vary one or two knobs from the last config; respond with ONLY the JSON object."
+            "You MUST change at least one knob from the previous config — explore the "
+            "design space (bigger/smaller, better precision, cheaper energy). "
+            "Respond with ONLY the JSON object."
         )
         out = self._shell(prompt)
         cfg = None

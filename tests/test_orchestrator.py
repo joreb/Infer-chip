@@ -54,6 +54,17 @@ def test_ram_warning_proceeds(tmp_path, monkeypatch, capsys):
     assert "ram" in err.lower()
 
 
+def test_override_backfills_when_backend_proposes_none(tmp_path, monkeypatch):
+    monkeypatch.setattr(orch, "get_target", lambda name: _fail_target())
+    seed = StubBackend({})  # proposes None every round
+    jp = orch.run_loop("digital", seed, rounds=3, out_root=tmp_path,
+                       config_override={"neurons": 128, "fanout": 8,
+                                        "weight_width": 4, "timesteps": 64,
+                                        "util_target": 60, "clock_ns": 4.0})
+    lines = [l for l in jp.read_text().splitlines() if l.strip()]
+    assert len(lines) == 3  # override replays when backend has nothing
+
+
 def test_invalid_proposals_fall_back_default_then_previous(tmp_path, monkeypatch):
     t = _fail_target()
     seen = []

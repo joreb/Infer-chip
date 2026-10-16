@@ -54,8 +54,8 @@ class DigitalTarget(Target):
             extra_env={"PARITY_CFG_JSON": json.dumps(cfg)},
         )
         # cocotb 2.x returns the results.xml path; parse pass/fail from it
-        from cocotb_tools.results import get_results
-        num_tests, num_failed, _ = get_results(Path(results_xml))
+        from cocotb_tools.check_results import get_results
+        num_tests, num_failed = get_results(Path(results_xml))
         return {"verdict": "pass" if num_failed == 0 else "fail",
                 "reason": None if num_failed == 0 else f"{num_failed}/{num_tests} cocotb tests failed",
                 "num_tests": int(num_tests), "num_failed": int(num_failed)}
