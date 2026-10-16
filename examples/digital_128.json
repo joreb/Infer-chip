@@ -1,4 +1,4 @@
 {
   "neurons": 128, "fanout": 8, "weight_width": 4, "timesteps": 64,
-  "util_target": 60, "clock_ns": 4.0
+  "util_target": 25, "clock_ns": 40.0
 }
