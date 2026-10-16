@@ -1,0 +1,74 @@
+"""Orchestrator round-loop tests with fakes (no real sims)."""
+
+import shutil  # noqa: F401  (module import guard parity)
+
+import pytest
+
+import orchestrator as orch
+from agents.stub import StubBackend
+
+
+def _fail_target():
+    class FailTarget:
+        name = "digital"
+        DEFAULT_CFG = {"dummy": True}
+
+        def evaluate(self, cfg, out_dir):
+            return {"sim": {"verdict": "fail", "reason": "sim died"},
+                    "flow": {"verdict": "fail", "reason": "flow died"},
+                    "config": cfg}
+
+    return FailTarget()
+
+
+def test_all_rounds_fail_journal_has_notes(tmp_path, monkeypatch):
+    monkeypatch.setattr(orch, "get_target", lambda name: _fail_target())
+    seq = {"digital": [{"cfg": i} for i in range(3)]}
+    jp = orch.run_loop("digital", StubBackend(seq), rounds=3, out_root=tmp_path)
+    lines = [l for l in jp.read_text().splitlines() if l.strip()]
+    import json
+    recs = [json.loads(l) for l in lines]
+    assert len(recs) == 3
+    for r in recs:
+        assert r["flow"]["verdict"] == "fail"
+        assert r["agent_note"]
+        assert r["sim"]["verdict"] == "fail"
+    assert jp.exists()
+
+
+def test_backend_none_ends_loop(tmp_path, monkeypatch):
+    monkeypatch.setattr(orch, "get_target", lambda name: _fail_target())
+    seq = {"digital": [{"cfg": 0}]}  # one config then None
+    jp = orch.run_loop("digital", StubBackend(seq), rounds=5, out_root=tmp_path)
+    lines = [l for l in jp.read_text().splitlines() if l.strip()]
+    assert len(lines) == 1
+
+
+def test_ram_warning_proceeds(tmp_path, monkeypatch, capsys):
+    monkeypatch.setattr(orch, "get_target", lambda name: _fail_target())
+    seq = {"digital": [{"neurons": 10**9, "fanout": 10, "weight_width": 8,
+                        "timesteps": 1000, "util_target": 60, "clock_ns": 4.0}]}
+    jp = orch.run_loop("digital", StubBackend(seq), rounds=1, out_root=tmp_path)
+    assert jp.exists()
+    err = capsys.readouterr().err
+    assert "ram" in err.lower()
+
+
+def test_invalid_proposals_fall_back_default_then_previous(tmp_path, monkeypatch):
+    t = _fail_target()
+    seen = []
+    orig = t.evaluate
+
+    def spy(cfg, out_dir):
+        seen.append(cfg)
+        return orig(cfg, out_dir)
+
+    t.evaluate = spy
+    monkeypatch.setattr(orch, "get_target", lambda name: t)
+    seq = {"digital": [{"foo": 1}, {"bar": 2}]}  # both invalid for digital
+    jp = orch.run_loop("digital", StubBackend(seq), rounds=2, out_root=tmp_path,
+                       config_override={"from_override": 5})
+    assert len(seen) == 2
+    assert seen[0]["dummy"] is True and seen[0]["from_override"] == 5  # DEFAULT_CFG round 1
+    assert seen[1]["dummy"] is True and seen[1]["from_override"] == 5  # keep previous
+    assert "neurons" not in seen[0]

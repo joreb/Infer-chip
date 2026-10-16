@@ -17,9 +17,14 @@ BATCH = 8
 DEPTH_BENCH = 8
 
 
+DEFAULT_CFG = {"mesh_depth": 4, "precision_bits": 8, "laser_mw": 1.0,
+               "wavelength_nm": 1550}
+
+
 class PhotonicTarget(Target):
     name = "photonic"
     required_keys = ["mesh_depth", "precision_bits", "laser_mw", "wavelength_nm"]
+    DEFAULT_CFG = DEFAULT_CFG
 
     def _workload(self) -> tuple[np.ndarray, np.ndarray]:
         rng = np.random.default_rng(42)

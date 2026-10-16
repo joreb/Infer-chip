@@ -13,10 +13,15 @@ from targets.digital.flow import run_pnr
 from targets.digital.rtl_gen import generate_rtl, module_name
 
 
+DEFAULT_CFG = {"neurons": 256, "fanout": 8, "weight_width": 4, "timesteps": 64,
+               "util_target": 60, "clock_ns": 4.0}
+
+
 class DigitalTarget(Target):
     name = "digital"
     required_keys = ["neurons", "fanout", "weight_width", "timesteps",
                      "util_target", "clock_ns"]
+    DEFAULT_CFG = DEFAULT_CFG
 
     def _run_sim(self, cfg: dict, out_dir: Path) -> dict:
         """cocotb parity sim, reusing Task 4 harness structure."""

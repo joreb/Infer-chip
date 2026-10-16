@@ -14,9 +14,14 @@ ROWS = COLS = 64
 BATCH = 8
 
 
+DEFAULT_CFG = {"xbar_rows": 32, "xbar_cols": 32, "variability_frac": 0.05,
+               "adc_bits": 8}
+
+
 class MemristiveTarget(Target):
     name = "memristive"
     required_keys = ["xbar_rows", "xbar_cols", "variability_frac", "adc_bits"]
+    DEFAULT_CFG = DEFAULT_CFG
 
     def _workload(self) -> tuple[np.ndarray, np.ndarray]:
         rng = np.random.default_rng(42)
