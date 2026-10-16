@@ -23,13 +23,14 @@ def test_single_neuron_hand_computed_trajectory():
 
 
 def test_subthreshold_accumulation_and_decay():
+    # Fixed-point arithmetic (T3 ruling): decay = 14/16 truncated, ww=4 lattice.
     m = LIFModel({"neurons": 1, "fanout": 1, "weight_width": 4, "timesteps": 3,
                   "seed": 123, "weights": [[4]]})  # weight 0.25
     train = np.array([[1], [0], [1]], dtype=np.int8)
     out = m.run(train)
-    # step1: v=0.25 (sub-threshold); step2: v=0.9*0.25=0.225; step3: v=0.225+0.25=0.475
+    # step1: v = 4/16 = 0.25; step2: (4*14)>>16 = 3/16 = 0.1875; step3: 3+4 = 7/16 = 0.4375
     assert out.tolist() == [[0], [0], [0]]
-    np.testing.assert_allclose(m.get_state_v(), [0.4525], rtol=0, atol=1e-12)
+    np.testing.assert_allclose(m.get_state_v(), [0.4375], rtol=0, atol=1e-12)
 
 
 def test_determinism_same_seed():
