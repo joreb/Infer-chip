@@ -13,13 +13,13 @@ sources: []
 
 ## Nengo
 
-[Nengo](https://open-neuromorphic.org/neuromorphic-computing/software/snn-frameworks/nengo/) is a Python package for building, testing, and deploying neural networks. It supports plenty of backends for the SNN simulation.
+The paper addresses the need to build, test, and deploy neural networks. It presents a Python package that supports many backends for spiking neural network simulation.
 
 [project page](https://open-neuromorphic.org/neuromorphic-computing/software/snn-frameworks/nengo/) and [repository](https://github.com/nengo/nengo).
 
 ## Lava
 
-[Lava](https://open-neuromorphic.org/neuromorphic-computing/software/snn-frameworks/lava/) is an open-source software framework for developing neuro-inspired applications and mapping them to neuromorphic hardware. Lava provides developers with the tools and abstractions to develop applications that fully exploit the principles of neural computation.
+The framework helps developers make neuro-inspired applications and map them to neuromorphic hardware. It is an open-source framework with tools and abstractions that use principles of neural computation.
 
 [project page](https://open-neuromorphic.org/neuromorphic-computing/software/snn-frameworks/lava/) and [repository](https://github.com/lava-nc/lava).
 

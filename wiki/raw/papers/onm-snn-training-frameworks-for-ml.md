@@ -13,43 +13,43 @@ sources: []
 
 ## BindsNET
 
-[BindsNET](https://open-neuromorphic.org/neuromorphic-computing/software/snn-frameworks/bindsnet/) is built on top of the PyTorch deep learning platform. It is used for the simulation of spiking neural networks (SNNs) and is geared towards machine learning and reinforcement learning.
+The paper presents a tool that simulates spiking neural networks for machine learning and reinforcement learning. The tool uses the PyTorch deep learning platform.
 
 [project page](https://open-neuromorphic.org/neuromorphic-computing/software/snn-frameworks/bindsnet/) and [repository](https://github.com/bindsnet/bindsnet).
 
 ## Norse
 
-[Norse](https://open-neuromorphic.org/neuromorphic-computing/software/snn-frameworks/norse/) aims at exploiting the advantages of bio-inspired neural components, which are sparse and event-driven - a fundamental difference from artificial neural networks. Norse expands PyTorch with primitives for bio-inspired neural components, bringing you two advantages: a modern and proven infrastructure based on PyTorch and deep learning-compatible spiking neural network components.
+Bio-inspired neural components are sparse and event-driven, but artificial neural networks are not. The paper extends PyTorch with primitives for bio-inspired neural components and gives deep learning-compatible spiking neural networks.
 
 [project page](https://open-neuromorphic.org/neuromorphic-computing/software/snn-frameworks/norse/) and [repository](https://github.com/norse/norse).
 
 ## Rockpool
 
-[Rockpool](https://open-neuromorphic.org/neuromorphic-computing/software/snn-frameworks/rockpool/) is a Machine Learning library for SNN applications. Design, train and test with GPU, TPU and CPU acceleration (based on PyTorch and Jax), then deploy to Neuromorphic compute hardware.
+The paper addresses the design, training, and testing of spiking neural network applications. The library gives GPU, TPU, and CPU acceleration with PyTorch and Jax and supports deployment to neuromorphic hardware.
 
 [project page](https://open-neuromorphic.org/neuromorphic-computing/software/snn-frameworks/rockpool/).
 
 ## snnTorch
 
-[snnTorch](https://open-neuromorphic.org/neuromorphic-computing/software/snn-frameworks/snntorch/) is a SNN training framework for machine learning applications. It is focused on gradient-based training of SNNs.
+The paper addresses training of spiking neural networks for machine learning applications. The method uses gradient-based training with PyTorch for GPU acceleration and gradient computation.
 
 [project page](https://open-neuromorphic.org/neuromorphic-computing/software/snn-frameworks/snntorch/) and [repository](https://github.com/jeshraghian/snntorch).
 
 ## Spyx
 
-[Spyx](https://open-neuromorphic.org/neuromorphic-computing/software/snn-frameworks/spyx/) is a compact spiking neural network package built on top of DeepMind's Haiku library. Based on JAX, it permits Just-In-Time compilation of partial or entire training loops for maximal utilization on GPUs and TPUs.
+The paper presents a compact spiking neural network package that builds on the Haiku library. It uses JAX to compile partial or complete training loops just in time for maximum use of GPUs and TPUs.
 
 [project page](https://open-neuromorphic.org/neuromorphic-computing/software/snn-frameworks/spyx/) and [repository](https://github.com/kmheckel/spyx).
 
 ## SpikingJelly
 
-[SpikingJelly](https://open-neuromorphic.org/neuromorphic-computing/software/snn-frameworks/spikingjelly/) is an open-source deep learning framework for Spiking Neural Network (SNN) based on PyTorch. The documentation of SpikingJelly is written in both English and Chinese: https://spikingjelly.readthedocs.io.
+The paper addresses the need for an open-source deep learning framework for spiking neural networks. The framework uses PyTorch and gives documentation in English and Chinese.
 
 [project page](https://open-neuromorphic.org/neuromorphic-computing/software/snn-frameworks/spikingjelly/) and [repository](https://github.com/fangwei123456/spikingjelly).
 
 ## Sinabs
 
-[Sinabs](https://open-neuromorphic.org/neuromorphic-computing/software/snn-frameworks/sinabs/) is a deep learning library based on PyTorch for spiking neural networks, with a focus on simplicity, fast training and extendability. Sinabs works well for Vision models because of its support for weight transfer.
+The authors present a library based on PyTorch for spiking neural networks. The library gives simple and fast training and supports weight transfer for vision models.
 
 [project page](https://open-neuromorphic.org/neuromorphic-computing/software/snn-frameworks/sinabs/) and [repository](https://github.com/synsense/sinabs).
 

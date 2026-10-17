@@ -13,37 +13,37 @@ sources: []
 
 ## Tonic
 
-[Tonic](https://open-neuromorphic.org/neuromorphic-computing/software/data-tools/tonic/) is a tool to facilitate the download, manipulation and loading of event-based/spike-based data. It's like PyTorch Vision but for neuromorphic data!
+Users need a tool to download, process, and load event-based and spike-based data. The paper presents a data tool that works like PyTorch Vision for neuromorphic data.
 
 [project page](https://open-neuromorphic.org/neuromorphic-computing/software/data-tools/tonic/) and [repository](https://github.com/neuromorphs/tonic).
 
 ## expelliarmus
 
-[expelliarmus](https://open-neuromorphic.org/neuromorphic-computing/software/data-tools/expelliarmus/) is a Python/C package to decode binary files produced by Prophesee cameras.
+Prophesee cameras produce binary files that need decoding. This package decodes these files with code in Python and C.
 
 [project page](https://open-neuromorphic.org/neuromorphic-computing/software/data-tools/expelliarmus/) and [repository](https://github.com/open-neuromorphic/expelliarmus).
 
 ## AEStream
 
-[AEStream](https://open-neuromorphic.org/neuromorphic-computing/software/data-tools/aestream/) parses event-based dynamic-vision system (DVS) data from an input source and streams it to a sink (GPU, CPU, network ports...).
+The tool parses event-based dynamic-vision system data from an input source. It streams the data to a sink such as a GPU, a CPU, or network ports.
 
 [project page](https://open-neuromorphic.org/neuromorphic-computing/software/data-tools/aestream/) and [repository](https://github.com/aestream/aestream).
 
 ## AEDAT
 
-[AEDAT](https://open-neuromorphic.org/neuromorphic-computing/software/data-tools/aedat/) is a fast AEDAT 4 python reader, with an implementation written in Rust.
+The tool reads AEDAT 4 data fast in Python. The implementation uses Rust.
 
 [project page](https://open-neuromorphic.org/neuromorphic-computing/software/data-tools/aedat/) and [repository](https://github.com/neuromorphicsystems/aedat).
 
 ## BIMVEE
 
-[BIMVEE](https://github.com/event-driven-robotics/bimvee) is an open-source python library for Batch Import, Manipulation, Visualisation and Export of Events etc. It has import routines for several different event formats including, notably, a python-native unpacker of rpg-rosbags (no ROS installation required).
+Event data exists in many formats, and users need tools to import, process, and export it. The method is an open-source Python library that imports, manipulates, visualizes, and exports event data with timestamp synchronization.
 
 [project page](https://github.com/event-driven-robotics/bimvee) and [repository](https://github.com/event-driven-robotics/bimvee).
 
 ## MUSTARD
 
-[MUSTARD](https://github.com/event-driven-robotics/mustard) is an open-source python application for playback of multistream data, including event-camera data. Each data stream present in a container (such as rosbag, but it can import any data-type which BIMVEE supports) opens a visualiser sub-window and data playback of all visualisers is controlled globally, including the speed, direction and time-window of visualisation.
+The paper addresses playback and visualization of multistream data, including event-camera data. The open-source Python application opens a visualiser sub-window for each data stream and controls playback speed, direction and time-window globally.
 
 [project page](https://github.com/event-driven-robotics/mustard) and [repository](https://github.com/event-driven-robotics/mustard).
 

@@ -13,13 +13,13 @@ sources: []
 
 ## Brian
 
-[Brian](https://open-neuromorphic.org/neuromorphic-computing/software/snn-frameworks/brian/) is a free, open source simulator for spiking neural networks. It is written in the Python programming language and is available on almost all platforms.
+Scientists need a simulator for spiking neural networks that saves their time. The authors develop a free open source Python simulator that is easy to use, flexible and extensible.
 
 [project page](https://open-neuromorphic.org/neuromorphic-computing/software/snn-frameworks/brian/) and [repository](https://github.com/brian-team/brian2).
 
 ## NEST
 
-[NEST](https://open-neuromorphic.org/neuromorphic-computing/software/snn-frameworks/nest/) is a simulator for spiking neural network models that focuses on the dynamics, size and structure of neural systems rather than on the exact morphology of individual neurons. The development of NEST is coordinated by the NEST Initiative.
+Simulation of neural systems must focus on dynamics, size and structure, not on the exact morphology of individual neurons. The paper presents a simulator for spiking neural network models of any size.
 
 [project page](https://open-neuromorphic.org/neuromorphic-computing/software/snn-frameworks/nest/) and [repository](https://github.com/nest/nest-simulator).
 
