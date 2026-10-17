@@ -37,7 +37,10 @@ def test_write_design_creates_config_and_rtl(tmp_path):
     conf = (tmp_path / "orfs" / "config.mk").read_text()
     rtl = tmp_path / "orfs" / "snn_core.v"
     assert rtl.exists() and conf
-    assert "DESIGN_NAME = snn_core\n" in conf
+    # DESIGN_NAME must equal the generated top module (real yosys rejects a
+    # mismatch: "ERROR: Module `snn_core' not found!"), nickname names the
+    # results dir
+    assert "DESIGN_NAME = snn_core_256\n" in conf
     assert "DESIGN_NICKNAME = snn_core_256" in conf
     assert "sky130hs" in conf
     assert "CORE_UTILIZATION = 60" in conf

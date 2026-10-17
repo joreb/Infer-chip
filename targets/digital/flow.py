@@ -92,7 +92,9 @@ def write_design(cfg: dict, out_dir: Path) -> dict:
     rtl.write_text(generate_rtl(cfg))
     config = stage / "config.mk"
     config.write_text(
-        "export DESIGN_NAME = snn_core\n"  # must equal top module exactly
+        # must equal the generated top module exactly; yosys rejects anything
+        # else ("ERROR: Module `snn_core' not found!")
+        f"export DESIGN_NAME = {name}\n"
         f"export DESIGN_NICKNAME = {name}\n"  # names the results dir
         f"export PLATFORM = {PLATFORM}\n"
         "export VERILOG_FILES = ./designs/src/snn_core/snn_core.v\n"
@@ -142,10 +144,14 @@ def run_pnr(cfg: dict, out_dir: Path, timeout_s: int = 3600) -> dict:
         f"cp -r flow/results/{PLATFORM}/{name} /results/{name}; "
         f"chown -R {uid}:{gid} /results; exit $rc"
     )
+    # -v bind sources must be absolute host paths: docker treats a relative
+    # path as a named volume and rejects it ("invalid characters for a local
+    # volume name ... use absolute path")
+    results_host.mkdir(parents=True, exist_ok=True)
     docker_cmd = [
         "docker", "run", "--rm", "-u", "0:0",  # writes over the root-owned image tree
-        "-v", f"{stage_dir(out_dir)}:/mnt/design",
-        "-v", f"{results_host}:/results",
+        "-v", f"{stage_dir(out_dir).resolve()}:/mnt/design",
+        "-v", f"{results_host.resolve()}:/results",
         IMAGE, "bash", "-c", cmd,
     ]
     for attempt in range(2):

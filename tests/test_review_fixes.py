@@ -194,3 +194,27 @@ def test_weight_range_signed_twos_complement():
     from targets.digital.model import weight_range
     assert weight_range(4) == (-8, 7)
     assert weight_range(8) == (-128, 127)
+
+def test_run_pnr_mounts_are_absolute(tmp_path, monkeypatch):
+    """ENG-005-draft: docker needs absolute host paths for -v mounts."""
+    captured = {}
+
+    def fake_run(cmd, **kw):
+        captured["cmd"] = cmd
+        class P:
+            returncode = 0
+            stdout = "ok"
+            stderr = ""
+        return P()
+
+    monkeypatch.setattr(dflow.subprocess, "run", fake_run)
+    monkeypatch.setattr(dflow.shutil, "which", lambda n: "/usr/bin/docker" if n == "docker" else None)
+    dflow.run_pnr({"neurons": 32, "fanout": 4, "weight_width": 4,
+                   "timesteps": 8, "util_target": 60, "clock_ns": 4.0},
+                  Path("rel_out_test"), timeout_s=10)
+    vs = [a for i, a in enumerate(captured["cmd"])
+          if captured["cmd"][i-1] == "-v"]
+    assert len(vs) == 2, vs
+    assert all(a.startswith("/") for a in vs), vs  # docker rejects relative
+    import shutil as _sh
+    _sh.rmtree("rel_out_test", ignore_errors=True)
