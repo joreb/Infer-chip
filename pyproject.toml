@@ -4,7 +4,11 @@ version = "0.1.0"
 description = "Agentic design loop for AI-inference chips: digital, photonic, memristive"
 readme = "README.md"
 requires-python = ">=3.13"
-dependencies = ["numpy>=2.5.4"]
+dependencies = [
+    "code-review-graph>=2.3.9",
+    "igraph>=1.0.0",
+    "numpy>=2.5.4",
+]
 
 [dependency-groups]
 dev = ["pytest>=9.0.2", "cocotb>=2.0.0", "matplotlib>=3.10.7"]
