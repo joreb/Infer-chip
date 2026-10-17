@@ -112,16 +112,75 @@ names the bug page it links to, or "new" if it needs its own incident page.
 - Prior: very low. Listed for completeness because the coincidence of
   identical elapsed times was genuinely suspicious.
 
+### H7. KILLED: liberty/LEF mismatch (platform variant mixing) — proposed and killed same day
+
+- Proposed by the peer session on the same run: sky130 standard cells from
+  a different variant than the LEF would give load_design masters it
+  cannot resolve (same ORD-2013 class as H3).
+- Killed with image-filesystem evidence, not journal evidence: inside
+  image d4590b320d36, `flow/platforms/sky130hs/config.mk` is internally
+  consistent — TECH_LEF `sky130_fd_sc_hs.tlef`, SC_LEF
+  `sky130_fd_sc_hs_merged.lef`, LIB_FILES
+  `sky130_fd_sc_hs__tt_025C_1v80.lib`, all `_hs_` and all resolved from
+  PLATFORM_DIR. No mixing exists. This kill is sound (config content is
+  not attributable to concurrent writers; it is an invariant of the image)
+  and survived the attribution sweep.
+
+## Addendum: attribution sweep (2026-10-17, later same day)
+
+The journal recorded four lines for this set, but the run directory had
+two concurrent writers (see wiki/bugs/orchestrator-run-dir-has-no-lock.md),
+so journal attribution is unsound for every line written while both ran.
+Consequences for the set, per the killed-versus-did-not-reproduce rule:
+
+- **H6 kill evidence retracted.** The kill rested on journal line count
+  (3 lines for 3 attempts) and on facts "observed" during the attempt-3
+  window (staged SDC content, 25 minutes of making). None of that is
+  attributable to a specific invocation while a second writer was live.
+  H6 returns to open with no kill evidence; the identical-elapsed-time
+  suspicion that motivated it is itself explainable by a second writer
+  reporting into a shared directory.
+- **H4's supporting line downgraded.** The sta_error 340 cannot-open line
+  surfaced once in grep-filtered output during the attempt-3 debugging
+  window. That window overlaps the second writer's activity, and line 2's
+  failure itself (`cp: cannot stat ... No such file or directory` after a
+  3.4 s synth) is confounded by a plausible concurrent-staging-overwrite
+  mechanism. Provenance unknown — absence of attribution is absence of
+  evidence, so H4 stands on its mechanism argument only. Confirm/kill is
+  unchanged: one `yosys> stat` and the `1_2_yosys.v` size check.
+- **Attempt-3 failure did not reproduce.** A rerun with identical staging
+  (bare `[get_ports]` SDC, DESIGN_NAME snn_core_128, same 40 ns clock)
+  passed synth, CTS, and reached routing with no ERROR lines in 114 KB of
+  log. Recorded as did-not-reproduce, not a kill: absence of evidence.
+  Status stays open.
+- **Lines 0-1 attribution.** No evidence of a second writer during those
+  windows (the second writer's first traceable footprint is the 02:11:57
+  staging mtime; lines 0-1 correspond to the docker-125 and DESIGN_NAME
+  defects fixed one by one before that). But "no evidence of overlap" is
+  weaker than "single writer" — the journal cannot distinguish writers at
+  all until the invocation-id fix lands.
+- **Tail property.** The identical outer tails across attempt failures
+  (and the identical elapsed times) are properties of the reporting layer
+  (reason-string truncation), never evidence of a matching cause. Same
+  finding generalized from ENG-003.
+
 ## Next actions
 
 1. Full-log rerun finishes; anchor hypotheses H1-H5 to its ERROR lines.
 2. Kill or upgrade each to confirmed with the file/line it names.
 3. Confirmed winner gets its incident page (ENG-008 family or new), the
    losers stay here with their evidence.
+4. Invocation identifier on every journal line (fix for the run-dir bug
+   page) before any further journal evidence is recorded.
 
 ## Related
 
 - wiki incident pages ENG-003/005/006/007 are the flow-bug chain this run
   walked through; references below use the wiki/engineering paths valid at
   the time of writing, wiki layout is being migrated by the peer session.
+- wiki/bugs/orchestrator-run-dir-has-no-lock.md — the two-writers defect
+  that forced the attribution sweep above (page written by the peer
+  session, fix owned by targets/).
+- wiki/tasks/hypothesis/ is this page's home; its README (folded into
+  wiki/index.md) names the one-file-per-live-failure convention.
 - docs/backlog.md is unaffected; this is a debug record, not a direction.
