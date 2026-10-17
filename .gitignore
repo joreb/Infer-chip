@@ -7,3 +7,11 @@ runs/
 *.vcd
 *.vp
 reference/
+# Added by code-review-graph
+.code-review-graph/
+
+# Fetched source material: 310 MB of arXiv PDFs and 4.5 GB of cloned repos.
+# Reproducible with tools/fetch_raw.py. Leading slash anchors this to the repo
+# root so the wiki's own capture area at wiki/raw/ stays tracked.
+/raw/
+tools/.cache/
