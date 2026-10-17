@@ -61,6 +61,6 @@ Each summary below comes from the abstract of the paper on arXiv. Papers that ar
 
 ## See also
 
-- [Wiki index](../index.md)
+- [Wiki index](../../index.md)
 - [Previous: Survey & Benchmark](01-survey-and-benchmark.md)
 - [Next: RTL (Register Transfer Level)](03-rtl.md)

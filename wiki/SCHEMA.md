@@ -10,13 +10,16 @@ this project. Procedure pages record how to act in this project.
 
 ## Conventions
 
-- **Folder layout is the type axis only, with one deliberate exception.** Most pages live directly at
-  `<pluralized-type>/<slug>.md`, flat, one layer deep (`references/03-rtl.md`,
+- **Folder layout is the type axis only, with two deliberate exceptions.** Most pages live directly at
+  `<pluralized-type>/<slug>.md`, flat, one layer deep (`raw/papers/03-rtl.md`,
   `incidents/001-np-diag-returns-1d.md`). No thematic prefix folders, no sub-folders inside a type
   folder, no pages at the wiki root. Thematic scope is expressed through `tags:` and `type:`, both of
   which have explicit declared sets in this schema. The folder tree does not carry a second axis.
   **Type names are singular, folder names are plural: the linter derives the folder from the type by
-  pluralizing.** The one exception is the `tasks/` area, described below.
+  pluralizing.**
+  The two exceptions are the `tasks/` area, described below, and `raw/papers/`, where the generated
+  paper pages live beside the raw paper PDFs (decided 2026-10-17; the generated pages stay inside
+  the wiki tree but out of the type axis).
 - File names: lowercase, hyphens, no spaces.
 - Every wiki page starts with YAML frontmatter, described below.
 - Cross-link with standard relative markdown links: `[index](../index.md)` from a type folder, and
@@ -32,7 +35,7 @@ this project. Procedure pages record how to act in this project.
 
 This is the rule that matters most here, because the wiki holds both kinds.
 
-Every page under `references/` is **generated**. `tools/build_wiki.py` writes the nine AI4CHIPS section
+Every page under `raw/papers/` is **generated**. `tools/build_wiki.py` writes the nine AI4CHIPS section
 pages and `tools/ingest_neuromorphic.py` writes the Open Neuromorphic pages. Do not hand-edit a
 generated page, and do not split one. The next build overwrites the edit, or the split desyncs from the
 generator and nobody notices.
@@ -70,9 +73,9 @@ status: open | closed
 validates each entry against the `raw/<kind>/<slug>.md` path pattern. Every page today carries
 `sources: []` because no page yet cites a capture file. Reference pages cite external arXiv URLs or
 project pages inline per row, and incident pages cite commit hashes and source paths in the body.
-When a page draws on captured material, list it in `sources:`. Large fetched material lives at the
-repo root under `raw/pdf/` and `raw/git/`, outside the wiki and outside git, because it is large
-and reproducible.
+When a page draws on captured material, list it in `sources:`. Large fetched material lives outside
+git: fetched paper PDFs sit under `raw/papers/` inside the wiki tree (git-ignored by path), and the
+cloned source repos sit at the repo root under `raw/pdf/` and `raw/git/`.
 
 ## Tag Taxonomy
 
@@ -234,7 +237,7 @@ insert one silently.
 
 ### Accepted findings
 
-`references/03-rtl.md` holds 97 papers in one table and passes 200 lines. The linter reports an
+`raw/papers/03-rtl.md` holds 97 papers in one table and passes 200 lines. The linter reports an
 oversized page at info level. The rationale is that the page boundary follows the source index
 section, which is the unit a reader navigates by, and a split would desync from the generator. The
 finding is accepted and not fixed.

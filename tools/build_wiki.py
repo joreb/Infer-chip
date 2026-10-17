@@ -38,7 +38,10 @@ ARXIV_DELAY_S = 3.5
 
 ROOT = Path(__file__).resolve().parent.parent
 WIKI_DIR = ROOT / "wiki"
-REFERENCES_DIR = WIKI_DIR / "references"
+# Generated paper pages live under wiki/raw/papers (since 2026-10-17):
+# user decision — the raw-source derived pages sit beside the raw paper
+# PDFs under wiki/raw/, inside the wiki tree.
+REFERENCES_DIR = WIKI_DIR / "raw" / "papers"
 CACHE_DIR = Path(__file__).resolve().parent / ".cache"
 
 OLLAMA_URL = "http://localhost:11434"
@@ -491,7 +494,7 @@ def render_page(
         out += ["## Paper summaries", "", body, ""]
 
     out += ["## See also", ""]
-    out += ["- [Wiki index](../index.md)"]
+    out += ["- [Wiki index](../../index.md)"]
     if prev_slug and prev_title:
         out += [f"- [Previous: {prev_title}]({prev_slug}.md)"]
     if next_slug and next_title:
@@ -505,7 +508,7 @@ def render_index_table(sections: list[dict]) -> str:
     lines = ["| # | Section | Papers |", "|---|---|---|"]
     for s in sections:
         lines.append(
-            f"| {s['index']:02d} | [{s['title']}](references/{s['slug']}.md) | {len(s['rows'])} |"
+            f"| {s['index']:02d} | [{s['title']}](raw/papers/{s['slug']}.md) | {len(s['rows'])} |"
         )
     return "\n".join(lines)
 
@@ -612,7 +615,7 @@ def selftest() -> None:
     assert "| 2023-01-16 |" in page
     assert "largest section" in page
     assert "## See also" in page, "See also section missing"
-    assert "[Wiki index](../index.md)" in page, "index link missing"
+    assert "[Wiki index](../../index.md)" in page, "index link missing"
     assert "[Previous: Flow & Layout]" in page, "previous section link missing"
     assert "[Next: HLS]" in page, "next section link missing"
     assert "—" not in page and "–" not in page, "dash reached the output"
@@ -692,7 +695,7 @@ def main() -> None:
     from datetime import date
     log_path = WIKI_DIR / "log.md"
     today = date.today().isoformat()
-    log_entry = f"## [{today}] update | AI4CHIPS reference pages\n\n- Rebuilt {len(sections)} reference pages under references/\n"
+    log_entry = f"## [{today}] update | AI4CHIPS reference pages\n\n- Rebuilt {len(sections)} reference pages under raw/papers/\n"
     if log_path.exists():
         log_path.write_text(log_path.read_text(encoding="utf-8") + "\n" + log_entry, encoding="utf-8")
     else:

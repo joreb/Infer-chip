@@ -26,7 +26,7 @@ The paper measures language quality. It reports 11.01 percent lower WikiText2 pe
 percent better accuracy on a LLAMA-7B model at 4-bit weights and 4-bit activations. Our loop measures
 area, routability and power. Neither set of numbers converts into the other.
 
-The paper is not in the upstream AI4CHIPS index, and every page under `references/` is generated from
+The paper is not in the upstream AI4CHIPS index, and every page under `raw/papers/` is generated from
 that index. A row added by hand there would disappear at the next rebuild. A musing is therefore the
 correct home for this paper, and that is a property of our wiki rather than a judgment about the work.
 

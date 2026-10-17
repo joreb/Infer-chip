@@ -61,6 +61,6 @@ Each summary below comes from the abstract of the paper on arXiv. Papers that ar
 
 ## See also
 
-- [Wiki index](../index.md)
+- [Wiki index](../../index.md)
 - [Previous: Verification & Debug](04-verification-and-debug.md)
 - [Next: Architecture](06-architecture.md)

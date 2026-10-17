@@ -25,10 +25,10 @@ Four limits apply to every reference page:
 - The sub-theme groups and the "Notable entries" text are the editorial layer of this wiki. The
   source indices do not contain them.
 
-Read [Survey and Benchmark](references/01-survey-and-benchmark.md) first if the field is new to you,
-then [RTL](references/03-rtl.md). To build a design loop, read RTL for the generation step,
-[Verification and Debug](references/04-verification-and-debug.md) for the feedback signal, and
-[Flow and Layout](references/08-flow-and-layout.md) to close on physical measurements.
+Read [Survey and Benchmark](raw/papers/01-survey-and-benchmark.md) first if the field is new to you,
+then [RTL](raw/papers/03-rtl.md). To build a design loop, read RTL for the generation step,
+[Verification and Debug](raw/papers/04-verification-and-debug.md) for the feedback signal, and
+[Flow and Layout](raw/papers/08-flow-and-layout.md) to close on physical measurements.
 
 <!-- generated:references:ai4chips -->
 ## AI4CHIPS Sections
@@ -37,15 +37,15 @@ The index holds 243 papers in 9 sections.
 
 | # | Section | Papers |
 |---|---|---|
-| 01 | [Survey & Benchmark](references/01-survey-and-benchmark.md) | 26 |
-| 02 | [HLS (High-Level Synthesis)](references/02-hls.md) | 12 |
-| 03 | [RTL (Register Transfer Level)](references/03-rtl.md) | 97 |
-| 04 | [Verification & Debug](references/04-verification-and-debug.md) | 36 |
-| 05 | [Security](references/05-security.md) | 12 |
-| 06 | [Architecture](references/06-architecture.md) | 15 |
-| 07 | [Netlist](references/07-netlist.md) | 21 |
-| 08 | [Flow & Layout](references/08-flow-and-layout.md) | 14 |
-| 09 | [Analog](references/09-analog.md) | 10 |
+| 01 | [Survey & Benchmark](raw/papers/01-survey-and-benchmark.md) | 26 |
+| 02 | [HLS (High-Level Synthesis)](raw/papers/02-hls.md) | 12 |
+| 03 | [RTL (Register Transfer Level)](raw/papers/03-rtl.md) | 97 |
+| 04 | [Verification & Debug](raw/papers/04-verification-and-debug.md) | 36 |
+| 05 | [Security](raw/papers/05-security.md) | 12 |
+| 06 | [Architecture](raw/papers/06-architecture.md) | 15 |
+| 07 | [Netlist](raw/papers/07-netlist.md) | 21 |
+| 08 | [Flow & Layout](raw/papers/08-flow-and-layout.md) | 14 |
+| 09 | [Analog](raw/papers/09-analog.md) | 10 |
 <!-- /generated:references:ai4chips -->
 
 <!-- generated:references:neuromorphic -->
@@ -55,11 +55,11 @@ The index holds 24 entries in 5 sections.
 
 | Section | Entries |
 |---|---|
-| [onm-snn-training-frameworks-for-ml](references/onm-snn-training-frameworks-for-ml.md) | 7 |
-| [onm-snn-training-frameworks-for-neuroscience](references/onm-snn-training-frameworks-for-neuroscience.md) | 2 |
-| [onm-snn-training-frameworks-for-ml-and-neuroscience](references/onm-snn-training-frameworks-for-ml-and-neuroscience.md) | 2 |
-| [onm-event-based-data-utilities](references/onm-event-based-data-utilities.md) | 6 |
-| [onm-digital-hardware-projects](references/onm-digital-hardware-projects.md) | 7 |
+| [onm-snn-training-frameworks-for-ml](raw/papers/onm-snn-training-frameworks-for-ml.md) | 7 |
+| [onm-snn-training-frameworks-for-neuroscience](raw/papers/onm-snn-training-frameworks-for-neuroscience.md) | 2 |
+| [onm-snn-training-frameworks-for-ml-and-neuroscience](raw/papers/onm-snn-training-frameworks-for-ml-and-neuroscience.md) | 2 |
+| [onm-event-based-data-utilities](raw/papers/onm-event-based-data-utilities.md) | 6 |
+| [onm-digital-hardware-projects](raw/papers/onm-digital-hardware-projects.md) | 7 |
 <!-- /generated:references:neuromorphic -->
 
 ## Incidents

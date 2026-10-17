@@ -64,6 +64,6 @@ Each summary below comes from the abstract of the paper on arXiv. Papers that ar
 
 ## See also
 
-- [Wiki index](../index.md)
+- [Wiki index](../../index.md)
 - [Previous: Netlist](07-netlist.md)
 - [Next: Analog](09-analog.md)

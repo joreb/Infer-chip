@@ -80,6 +80,6 @@ Each summary below comes from the abstract of the paper on arXiv. Papers that ar
 
 ## See also
 
-- [Wiki index](../index.md)
+- [Wiki index](../../index.md)
 - [Previous: Architecture](06-architecture.md)
 - [Next: Flow & Layout](08-flow-and-layout.md)

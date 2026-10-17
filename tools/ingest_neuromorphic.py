@@ -29,7 +29,9 @@ from build_wiki import OLLAMA_URL, Summarizer, scrub_dashes, slugify
 ROOT = Path(__file__).resolve().parent.parent
 SOURCE = ROOT / "raw" / "open-neuromorphic" / "README.md"
 WIKI_DIR = ROOT / "wiki"
-REFERENCES_DIR = WIKI_DIR / "references"
+# Generated paper pages live under wiki/raw/papers (since 2026-10-17);
+# see build_wiki.py for the note.
+REFERENCES_DIR = WIKI_DIR / "raw" / "papers"
 SOURCE_REPO = "https://github.com/open-neuromorphic/open-neuromorphic"
 SOURCE_SITE = "https://open-neuromorphic.org"
 
@@ -141,7 +143,7 @@ def render(section: dict, summarizer: Summarizer, prev_slug: str = "", prev_titl
         ]
 
     out += ["## See also", ""]
-    out += ["- [Wiki index](../index.md)"]
+    out += ["- [Wiki index](../../index.md)"]
     if prev_slug and prev_title:
         out += [f"- [Previous: {prev_title}]({prev_slug}.md)"]
     if next_slug and next_title:
@@ -157,7 +159,7 @@ def update_index(sections: list[dict]) -> None:
     total = sum(len(s["entries"]) for s in sections)
     table_lines = ["| Section | Entries |", "|---|---|"]
     for s in sections:
-        table_lines.append(f"| [onm-{s['slug']}](references/onm-{s['slug']}.md) | {len(s['entries'])} |")
+        table_lines.append(f"| [onm-{s['slug']}](raw/papers/onm-{s['slug']}.md) | {len(s['entries'])} |")
     table = "\n".join(table_lines)
     content = f"## Open Neuromorphic Sections\n\nThe index holds {total} entries in {len(sections)} sections.\n\n{table}\n"
 
@@ -256,7 +258,7 @@ def selftest() -> None:
     assert "## BindsNET" in page
     assert "[repository](https://github.com/bindsnet/bindsnet)" in page
     assert "## See also" in page, "See also section missing"
-    assert "[Wiki index](../index.md)" in page, "index link missing"
+    assert "[Wiki index](../../index.md)" in page, "index link missing"
     assert "[Previous: Digital hardware projects]" in page, "previous section link missing"
     assert "[Next: Digital hardware projects]" in page, "next section link missing"
     assert plain.calls == 0, "no model must mean no request"
@@ -312,7 +314,7 @@ def main() -> None:
     from datetime import date
     log_path = WIKI_DIR / "log.md"
     today = date.today().isoformat()
-    log_entry = f"## [{today}] update | Open Neuromorphic reference pages\n\n- Rebuilt {len(sections)} reference pages under references/\n"
+    log_entry = f"## [{today}] update | Open Neuromorphic reference pages\n\n- Rebuilt {len(sections)} reference pages under raw/papers/\n"
     if log_path.exists():
         log_path.write_text(log_path.read_text(encoding="utf-8") + "\n" + log_entry, encoding="utf-8")
     else:

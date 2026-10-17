@@ -105,3 +105,19 @@
 - User decision 2026-10-17: the proposal to move the generated pages from wiki/references/ to docs/papers/ is rejected. wiki/ holds both hand-written and generated pages.
 - The tools/build_wiki.py and tools/ingest_neuromorphic.py output paths and wiki/index.md are unchanged as part of the decision; a migration was started and reverted the same day with no commit.
 - The tasks/ nested layout and the SCHEMA.md accepted-findings list are unchanged.
+
+## [2026-10-17] update | AI4CHIPS reference pages
+
+- Rebuilt 9 reference pages under raw/papers/
+
+## [2026-10-17] update | Open Neuromorphic reference pages
+
+- Rebuilt 5 reference pages under raw/papers/
+## [2026-10-17] migrate | Generated paper pages from references/ to raw/papers/
+
+- Moved 14 generated pages from wiki/references/ to wiki/raw/papers/ with git mv, beside the fetched paper PDFs already under wiki/raw/papers/.
+- tools/build_wiki.py and tools/ingest_neuromorphic.py write to wiki/raw/papers/ and their wiki/index.md table links point at raw/papers/. Generated page footers now link the index at ../../index.md.
+- wiki/index.md hand-written prose links updated to raw/papers/.
+- wiki/SCHEMA.md: layout rule now states two deliberate exceptions, tasks/ and raw/papers/.
+- The spikellm musing mentions the new path.
+- Both generator selftests pass; a full offline rebuild ran clean from the new location.

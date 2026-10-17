@@ -108,6 +108,6 @@ Each summary below comes from the abstract of the paper on arXiv. Papers that ar
 
 ## See also
 
-- [Wiki index](../index.md)
+- [Wiki index](../../index.md)
 - [Previous: RTL (Register Transfer Level)](03-rtl.md)
 - [Next: Security](05-security.md)
