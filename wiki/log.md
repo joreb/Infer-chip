@@ -8,6 +8,15 @@
 > decisions about what not to do. Aim for roughly 20 lines per entry.
 > When this file exceeds 500 entries, rotate: rename to log-YYYY.md, start fresh.
 
+## [2026-10-17] migrate and create | Musing pages from tasks to wiki
+
+- Moved 4 musing pages from tasks/musings/ to wiki/musings/ using git mv
+- Added YAML frontmatter to each musing with created/updated dates and tags
+- Replaced Related sections with intra-wiki links to musings and wiki index
+- Created 1 new musing: SpikeLLM is not a target for the fabric
+- Added Musings section to wiki/index.md with all five pages and one-line verdicts
+- Cross-linked musings and verified all five pages exist under wiki/musings/
+
 ## [2026-10-17] restructure | Wiki schema conformance
 
 - Created `wiki/references/` directory for generated reference pages
@@ -55,3 +64,25 @@
 ## [2026-10-17] update | AI4CHIPS reference pages
 
 - Rebuilt 9 reference pages under references/
+
+## [2026-10-17] restructure | Tasks area official in schema and index
+
+- Updated SCHEMA.md conventions bullet to state that tasks/ is the one deliberate exception to flat layout
+- Added new section "The tasks area" to SCHEMA.md documenting nested structure and link depths
+- Added task type to frontmatter enum in SCHEMA.md and Page Types table
+- Added status field (open/closed) to frontmatter specification
+- Added Task Pages section to SCHEMA.md with anatomy, update rule, and graduation rules for hypotheses
+- Added guidance for task pages to "Choosing a page type" section
+- Added accepted findings entry for structure warnings on pages under tasks/
+- Fixed 5 broken links in tasks/musings/ pages: changed ../index.md to ../../index.md
+- Added frontmatter to tasks/hypothesis/2026-10-17-1-synth-load-design-fail.md with type: task, status: open, tags: [flow, orfs, yosys]
+- Moved Musings section in index.md into new Tasks section with two subsections
+- Updated all musing links in index.md from musings/ to tasks/musings/
+- Added Hypotheses subsection to Tasks section in index.md with the one open investigation
+- Deleted tasks/musings/README.md and tasks/hypothesis/README.md (content folded into index.md)
+
+## [2026-10-17] create | First bug page
+
+- Created bugs/orchestrator-run-dir-has-no-lock.md with symptom, root cause, workaround, proposed fix, and notes
+- Added Bugs section to wiki/index.md listing the new page
+- Added inbound link from incidents/003-tail-without-pipefail.md to the bug page in See also section

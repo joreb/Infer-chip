@@ -1,7 +1,16 @@
-# Musing: BindSNET is a trainer, not a golden model
+---
+title: BindSNET is a trainer, not a golden model
+created: 2026-10-17
+updated: 2026-10-17
+type: musing
+tags: [snn, verification, neuromorphic]
+sources: []
+---
+
+# BindSNET is a trainer, not a golden model
 
 Date: 2026-10-17. Question asked by JSR during the digital e2e PnR run:
-would https://github.com/BindsNET/bindsnet help us? Short answer: wrong
+would <https://github.com/BindsNET/bindsnet> help us? Short answer: wrong
 layer. It is a PyTorch SNN simulator and trainer, not a hardware path.
 
 ## What BindSNET does
@@ -43,8 +52,6 @@ Recorded in docs/backlog.md entry 1 and tasks/musings/ for the full shape.
 
 ## Related
 
-- docs/backlog.md entry 1: train-and-map path.
-- tasks/musings/2026-10-17-bindsnet-plus-hls4ml-seam.md: the same library
-  in the proposed RTL-generation role.
-- tasks/musings/2026-10-17-llms-on-snn-hardware.md: train-then-map is also
-  how every deployable spiking language model lands on hardware.
+- [BindSNET for model gen and hls4ml for RTL?](2026-10-17-bindsnet-plus-hls4ml-seam.md)
+- [Can one run LLMs on spiking neural network hardware?](2026-10-17-llms-on-snn-hardware.md)
+- [Wiki index](../../index.md)

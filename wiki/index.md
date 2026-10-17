@@ -74,8 +74,34 @@ Incident pages record defects, limits and decisions in this project with their s
 - [ENG-006: relative docker bind paths are rejected as named volumes](incidents/006-relative-docker-bind-paths.md). Orchestrator-only failure, docker daemon rejects relative paths as volume names before make starts.
 - [ENG-007: DESIGN_NAME must equal the generated top module](incidents/007-design-name-equals-top-module.md). Hardcoded config name against a generator-named top module fails yosys elaboration.
 
+## Bugs
+
+Bug pages record defects with no fix yet, or fixes that span many pages.
+
+- [Concurrent orchestrator invocations clobber one shared run directory](bugs/orchestrator-run-dir-has-no-lock.md). Two runs write the same journal and results tree without coordination or error detection.
+
 ## Procedures
 
 Procedure pages record how to act in this project.
 
 - [How to add an engineering log entry](procedures/add-an-engineering-log-entry.md). Workflow for documenting bugs, limits and decisions in this log.
+
+## Tasks
+
+Working records grouped by activity rather than by type. This area holds two sub-areas: exploration records and investigation records.
+
+### Musings
+
+Musing pages record dated, immutable decisions and deliberations from a single moment in time.
+
+- [Can one run LLMs on spiking neural network hardware?](tasks/musings/2026-10-17-llms-on-snn-hardware.md). Large-scale spiking language models remain blocked by compute shape and memory bandwidth, not neuron science.
+- [BindSNET for model gen and hls4ml for RTL?](tasks/musings/2026-10-17-bindsnet-plus-hls4ml-seam.md). The proposed chain breaks at the seam due to missing SNN support in hls4ml and fundamental architectural mismatch.
+- [Why not hls4ml for the fabric itself?](tasks/musings/2026-10-17-why-not-hls4ml-for-the-fabric.md). The block is an event-driven state machine, not a dataflow inference graph; hls4ml adds no hardware value.
+- [BindSNET is a trainer, not a golden model](tasks/musings/2026-10-17-bindsnet-not-a-golden-model.md). BindSNET is a PyTorch simulator for learning; it replaces neither the golden model nor a hardware path.
+- [SpikeLLM is not a target for the fabric](tasks/musings/2026-10-17-spikellm-is-not-a-target-for-the-fabric.md). SpikeLLM redesigns language models with spiking mechanisms, but the scale and spike mechanism both mismatch our 256-neuron fabric.
+
+### Hypotheses
+
+Investigation records for live failures. Each hypothesis stays open while evidence arrives. When the investigation closes, it freezes.
+
+- [Hypothesis set: 1_synth load_design failure (attempt 3)](tasks/hypothesis/2026-10-17-1-synth-load-design-fail.md). Orchestrated 128-neuron PnR run fails at yosys design load with unclear error; full log pending to anchor hypotheses about SDC braces, design binding, memory extraction, or stale artifacts.

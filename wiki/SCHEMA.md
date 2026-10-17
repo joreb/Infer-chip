@@ -10,13 +10,13 @@ this project. Procedure pages record how to act in this project.
 
 ## Conventions
 
-- **Folder layout is the type axis only.** Every page lives directly at
+- **Folder layout is the type axis only, with one deliberate exception.** Most pages live directly at
   `<pluralized-type>/<slug>.md`, flat, one layer deep (`references/03-rtl.md`,
   `incidents/001-np-diag-returns-1d.md`). No thematic prefix folders, no sub-folders inside a type
   folder, no pages at the wiki root. Thematic scope is expressed through `tags:` and `type:`, both of
   which have explicit declared sets in this schema. The folder tree does not carry a second axis.
   **Type names are singular, folder names are plural: the linter derives the folder from the type by
-  pluralizing.**
+  pluralizing.** The one exception is the `tasks/` area, described below.
 - File names: lowercase, hyphens, no spaces.
 - Every wiki page starts with YAML frontmatter, described below.
 - Cross-link with standard relative markdown links: `[index](../index.md)` from a type folder, and
@@ -46,15 +46,24 @@ these pages in place is the wrong instrument, however correct its findings are.
 
 Pages under `incidents/` and `procedures/` are hand-written and have no generator.
 
+## The tasks area
+
+Most pages live at `<pluralized-type>/<slug>.md` flat, one layer deep, as stated above. References, incidents and procedures follow that rule. The `tasks/` area is the one deliberate exception. It groups working records by activity rather than by type. It holds two sub-areas: `tasks/musings/` for dated deliberation records and `tasks/hypothesis/` for investigation records.
+
+A page inside `tasks/` still declares its `type` in frontmatter. The folder does not carry the type there. A page in `tasks/musings/` declares `type: musing` and a page in `tasks/hypothesis/` declares `type: task`. The linter flags every page under `tasks/` as misfiled at blocking severity. Its rule derives the folder from the type and permits no sub-folder. That finding is expected and accepted. Nobody should flatten `tasks/` to silence it.
+
+A relative link from a page in a sub-area to the wiki index is `../../index.md`. That is two levels up, not one.
+
 ## Frontmatter
 
 ```yaml
 title: Page Title
 created: YYYY-MM-DD
 updated: YYYY-MM-DD
-type: incident | procedure | reference | bug | test | solution | concept | entity | comparison | query | summary
+type: incident | procedure | reference | bug | test | solution | concept | entity | comparison | query | summary | musing | task
 tags: [from taxonomy below]
 sources: []
+status: open | closed
 ```
 
 `sources:` is the canonical inventory of raw files captured **under the wiki root**. The linter
@@ -91,6 +100,8 @@ Rule: every tag on a page must appear in this taxonomy. To use a new tag, add it
 | comparison | Two items compared side by side with a verdict |
 | query | An answer to one specific question, question-organized |
 | summary | An overview or topic-organized digest |
+| musing | A dated, immutable record of a decision or a deliberation at one point in time |
+| task | An investigation record that stays open while evidence arrives and freezes when closed |
 
 ## Reference Pages
 
@@ -153,12 +164,7 @@ page when one defect has one fix and one test. Use a bug page when the defect ha
 one fix spans many pages. Use a test page when the test covers many pages or when it is unlinked to
 one defect. Use a solution page when one remedy already applies to two or more defects and you want
 one place to state it. A solution page links to every incident page it covers, which satisfies the
-outbound-link minimum.
-
-An incident page holds symptom, root cause, fix and regression test as one story. Use an incident
-page when one defect has one fix and one test. Use a bug page when the defect has no fix yet or when
-one fix spans many pages. Use a test page when the test covers many pages or when it is unlinked to
-one defect. Each page type reflects whether every piece has a single counterpart.
+outbound-link minimum. Use a musing page when you want a dated, immutable record of a decision or a deliberation at this moment. Use a task page to record a failure under investigation while evidence arrives and to preserve killed hypotheses after the investigation closes.
 
 ## Procedure Pages
 
@@ -169,6 +175,43 @@ Answers "how should this be done?" One page per rule or workflow. Sections in th
 - The rule, or the steps
 - Pitfalls: optional
 - See also: links to related pages
+
+## Musing Pages
+
+A dated, immutable record of a decision or a deliberation. One page per decision. Sections in this order:
+
+- Verdict: one or two sentences, stated flatly
+- Argument: why the verdict holds
+- Rejection rationale: what the author considered and declined, and on what grounds
+- Related: links to incidents, to backlog entries and to other musings
+
+### Immutability Rule
+
+A musing is immutable after the day somebody writes it. The `updated` date always equals the `created` date. To revise a verdict, add a new dated musing and link it to the one it supersedes. The superseded musing gains one line at its top naming its successor. That line is the only permitted content edit. A typo fix or a broken-link fix is permitted and does not bump `updated`. A musing records what somebody believed at a moment. An edit that rewrites an old verdict destroys the record.
+
+### Choosing between musing, comparison and concept
+
+A musing is dated, immutable, a decision or deliberation at a point in time. A comparison is living, revised as the answer changes, a maintained structured weighing. A concept is living, explains a thing rather than deciding anything. A musing must never be converted into a comparison. A maintained position page is a new comparison page that cites the musings as its history.
+
+## Task Pages
+
+An investigation record that stays open while evidence arrives and freezes when the investigation closes. One page per investigation. Sections in this order:
+
+- A one-line statement of the failure under investigation
+- Ranked hypotheses, each with its evidence for, its evidence against, and its verdict
+- Related: links to incidents and other task pages
+
+While `status: open`, the page is a living document. Bump `updated` on every edit. Kill a hypothesis in place and record what killed it. Add evidence as it arrives. When the investigation closes, set `status: closed` and add a `closed: YYYY-MM-DD` field. From that date the page is immutable, exactly like a musing, except that link edits stay permitted.
+
+A confirmed hypothesis graduates to an incident page, and the task page links to it. A killed hypothesis stays on the task page with its kill evidence and never gets its own page. The killed hypotheses are the main value of a closed task page, because they record proven dead ends.
+
+### Killed vs. absence of evidence
+
+A hypothesis is killed only by disproof. Somebody reads a file or runs a check. The evidence contradicts the hypothesis. A failure that stops reproducing gives no disproof. It gives absence of evidence. These two verdicts are different.
+
+Record a non-reproducing failure as an evidence line. Name the run and the conditions. Do not mark any hypothesis killed because of absence. A set whose failure stopped reproducing stays `status: open`. The investigation has no answer yet.
+
+Set `status: closed` only when the investigation reached an answer. One hypothesis is confirmed. Or every hypothesis is killed by disproof. A non-reproducing failure looks exactly like a fix. A page closed on that basis loses the ability to recognize the failure when it returns.
 
 ## Linter Notes
 
@@ -200,6 +243,12 @@ Types `solution`, `concept`, `entity`, `comparison`, `query` and `summary` are d
 and their folders exist with `.gitkeep` files, but no page uses them yet. The linter may report
 them as unused at info level. This is deliberate: types are declared ahead of use so the linter does
 not warn when the first page of each type is created.
+
+Every page under `tasks/` is reported as misfiled at blocking severity because the linter derives the folder from the type and permits no sub-folder. That finding is expected and accepted. The user requires the nested layout; the linter cannot express it. Nobody should flatten `tasks/` to silence the linter.
+
+If a stale finding ever appears on a musing page, it is accepted. The immutability rule is the rationale: `updated` never changes after the day a musing is written.
+
+The linter expects a top-level `musings/` folder because `musing` is declared in the page-type enum. Musing pages live at `tasks/musings/` by direction. Creating an empty `musings/` folder at the wiki root would mislead every future reader about where to find musings. The warning is accepted. Do not create the empty folder.
 
 ## Update Policy
 

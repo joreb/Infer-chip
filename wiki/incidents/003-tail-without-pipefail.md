@@ -56,4 +56,9 @@ digital/flow.py` holds zero occurrences of `pipefail`, so the literal assertion 
 parent commit. The stale purge assertion is not confirmed against the old code: the test pins the
 current behavior together, and the parent commit held no purge to revert to.
 
-See also [index](../index.md), [ENG-005](005-orfs-make-run-is-per-stage-noop.md), and [procedure](../procedures/add-an-engineering-log-entry.md).
+## See also
+
+- [index](../index.md)
+- [ENG-005: make run in the ORFS image is a per-stage noop](005-orfs-make-run-is-per-stage-noop.md)
+- [Concurrent orchestrator invocations clobber one shared run directory](../bugs/orchestrator-run-dir-has-no-lock.md). This bug page records a third member of the same fault family.
+- [procedure](../procedures/add-an-engineering-log-entry.md)

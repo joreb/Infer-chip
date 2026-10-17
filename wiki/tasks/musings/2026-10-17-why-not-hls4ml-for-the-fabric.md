@@ -1,4 +1,13 @@
-# Musing: why not hls4ml for the fabric itself?
+---
+title: Why not hls4ml for the fabric itself?
+created: 2026-10-17
+updated: 2026-10-17
+type: musing
+tags: [hls, rtl, verification]
+sources: []
+---
+
+# Why not hls4ml for the fabric itself?
 
 Date: 2026-10-17. Question asked by JSR during the digital e2e PnR run:
 "why use rtl_gen.py, why not hls4ml?" Short answer: the block is an
@@ -48,6 +57,6 @@ before a jury pitch, for no hardware story we do not already have.
 
 ## Related
 
-- tasks/musings/2026-10-17-bindsnet-plus-hls4ml-seam.md: the trained-model
-  variant of the same question.
-- docs/backlog.md entries 1 and 2.
+- [BindSNET for model gen and hls4ml for RTL?](2026-10-17-bindsnet-plus-hls4ml-seam.md)
+- [BindSNET is a trainer, not a golden model](2026-10-17-bindsnet-not-a-golden-model.md)
+- [Wiki index](../../index.md)

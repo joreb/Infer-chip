@@ -15,3 +15,9 @@ reference/
 # root so the wiki's own capture area at wiki/raw/ stays tracked.
 /raw/
 tools/.cache/
+
+# Captured binaries inside the wiki's raw area. They sit on disk so a page's
+# sources: entry resolves, but they never enter git: 310 MB of PDFs would bloat
+# the history and tools/fetch_raw.py reproduces them. Markdown capture notes
+# and .gitkeep files beside them stay tracked.
+wiki/raw/**/*.pdf

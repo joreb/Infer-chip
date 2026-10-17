@@ -1,4 +1,13 @@
-# Musing: can one run LLMs on spiking neural network hardware?
+---
+title: Can one run LLMs on spiking neural network hardware?
+created: 2026-10-17
+updated: 2026-10-17
+type: musing
+tags: [snn, neuromorphic, benchmark]
+sources: []
+---
+
+# Can one run LLMs on spiking neural network hardware?
 
 Date: 2026-10-17. Backdrop: the digital SNN fabric PnR run in flight.
 Question asked by JSR during the session. Answer written for the proposal
@@ -62,7 +71,7 @@ not by neuron science.
 
 ## Related
 
-- docs/backlog.md entry 1 (train-and-map) and entry 2 (hls4ml for the dense
-  blocks) are the two halves of the split noted above.
-- The OpenSpike memory interface doc is the architecture reason weights stay
-  external, which is what makes train-then-map possible at all.
+- [BindSNET is a trainer, not a golden model](2026-10-17-bindsnet-not-a-golden-model.md)
+- [Why not hls4ml for the fabric](2026-10-17-why-not-hls4ml-for-the-fabric.md)
+- [SpikeLLM is not a target for the fabric](2026-10-17-spikellm-is-not-a-target-for-the-fabric.md)
+- [Wiki index](../../index.md)

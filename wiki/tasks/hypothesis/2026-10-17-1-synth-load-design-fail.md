@@ -1,3 +1,13 @@
+---
+title: Hypothesis set: 1_synth load_design failure (attempt 3)
+created: 2026-10-17
+updated: 2026-10-17
+type: task
+status: open
+tags: [flow, orfs, yosys]
+sources: []
+---
+
 # Hypothesis set: 1_synth load_design failure (attempt 3)
 
 Date: 2026-10-17. Subject: orchestrated 128-neuron PnR run, attempt 3,

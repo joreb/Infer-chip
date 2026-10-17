@@ -8,10 +8,15 @@ Sources scanned:
   wiki/*.md                              the generated wiki pages
 
 Layout produced:
-  raw/pdf/<arxiv-id>.pdf                 arXiv papers
-  raw/pdf/other/<host>__<name>.pdf       other PDF links
-  raw/git/<owner>__<repo>/               shallow clones
+  wiki/raw/papers/<arxiv-id>.pdf         arXiv papers, inside the wiki capture area
+  wiki/raw/papers/<host>__<name>.pdf     other PDF links, same folder
+  raw/git/<owner>__<repo>/               shallow clones, outside the wiki
   raw/manifest.json                      what was fetched, skipped and failed
+
+PDFs sit under the wiki so a page's `sources:` entry resolves under the wiki
+root. They are gitignored via `wiki/raw/**/*.pdf`, so they exist on disk but
+never enter history. The clones stay outside the wiki: 4.5 GB and no page
+cites them.
 
 Everything is skip-if-present, so a rerun only fetches what is missing. raw/ is
 git-ignored because it is large and this script reproduces it.
@@ -39,8 +44,12 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 RAW = ROOT / "raw"
-PDF_DIR = RAW / "pdf"
-OTHER_PDF_DIR = PDF_DIR / "other"
+# PDFs live in the wiki's own capture area so a page's sources: entry can
+# resolve under the wiki root. They are gitignored there (wiki/raw/**/*.pdf):
+# present on disk, never in history. Clones stay outside the wiki at raw/git/,
+# because they are 4.5 GB and no page cites them.
+PDF_DIR = ROOT / "wiki" / "raw" / "papers"
+OTHER_PDF_DIR = PDF_DIR
 GIT_DIR = RAW / "git"
 CACHE_DIR = Path(__file__).resolve().parent / ".cache"
 MANIFEST = RAW / "manifest.json"

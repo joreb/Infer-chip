@@ -1,4 +1,13 @@
-# Musing: BindSNET for model gen and hls4ml for RTL?
+---
+title: BindSNET for model gen and hls4ml for RTL?
+created: 2026-10-17
+updated: 2026-10-17
+type: musing
+tags: [hls, snn, flow]
+sources: []
+---
+
+# BindSNET for model gen and hls4ml for RTL?
 
 Date: 2026-10-17. Proposal raised by JSR during the digital e2e PnR run.
 Verdict: the combo breaks at the seam. Full argument kept here; the short
@@ -57,7 +66,6 @@ Decision: rtl_gen.py stays. Recorded in docs/backlog.md entries 1 and 2.
 
 ## Related
 
-- docs/backlog.md entry 1 is the train-and-map path this implies.
-- docs/backlog.md entry 2 carries the short rejection with reasons.
-- docs/openspike-memory-interface.md is why weights-external makes
-  train-then-map possible at all.
+- [Why not hls4ml for the fabric](2026-10-17-why-not-hls4ml-for-the-fabric.md)
+- [BindSNET is a trainer, not a golden model](2026-10-17-bindsnet-not-a-golden-model.md)
+- [Wiki index](../../index.md)

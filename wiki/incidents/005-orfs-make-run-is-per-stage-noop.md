@@ -82,3 +82,7 @@ downstream. General rule for this flow: a stage ends in pass only when a result
 artifact exists, never on exit code alone.
 
 See also [index](../index.md), [ENG-003](003-tail-without-pipefail.md), and [procedure](../procedures/add-an-engineering-log-entry.md).
+
+## See also
+
+- [Synthesis load_design failure investigation](../tasks/hypothesis/2026-10-17-1-synth-load-design-fail.md). This hypothesis set tests the same fault class again under a different scenario.
