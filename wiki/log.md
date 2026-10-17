@@ -100,3 +100,8 @@
 - tasks/musings/2026-10-17-llms-on-snn-hardware.md: added a Related link to the RISC-V control-plane musing, clearing its only-inbound orphan warn; link-only edit, no verdict rewritten
 - tasks/musings/2026-10-17-spikellm-is-not-a-target-for-the-fabric.md: corrected the BindSNET Related link label to the target page's real title
 - Verified the new riscv musing's index entry links to the real file and matches its summary
+## [2026-10-17] update | Generated paper pages stay in wiki after layout decision
+
+- User decision 2026-10-17: the proposal to move the generated pages from wiki/references/ to docs/papers/ is rejected. wiki/ holds both hand-written and generated pages.
+- The tools/build_wiki.py and tools/ingest_neuromorphic.py output paths and wiki/index.md are unchanged as part of the decision; a migration was started and reverted the same day with no commit.
+- The tasks/ nested layout and the SCHEMA.md accepted-findings list are unchanged.
