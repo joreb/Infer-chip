@@ -105,7 +105,7 @@ def write_design(cfg: dict, out_dir: Path) -> dict:
     )
     (stage / "snn_core.sdc").write_text(
         f"create_clock -name clk -period {float(cfg.get('clock_ns', 4.0))} "
-        "{[get_ports clk]}\n"
+        "[get_ports clk]\n"
     )
     return {"config": config, "rtl": rtl, "design_name": name}
 

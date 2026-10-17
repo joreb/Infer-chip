@@ -51,7 +51,7 @@ For procedure pages, `sources` should be an empty list unless the procedure is d
 
 - Issues: bug
 - Components: photonic, testbench, flow
-- Techniques: numpy, cocotb, orfs, makefile
+- Techniques: numpy, cocotb, orfs, makefile, docker, yosys
 - Meta: regression-test
 
 Rule: every tag on a page must appear in this taxonomy. If a new tag is needed,

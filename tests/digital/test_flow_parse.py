@@ -45,6 +45,12 @@ def test_write_design_creates_config_and_rtl(tmp_path):
     assert "sky130hs" in conf
     assert "CORE_UTILIZATION = 60" in conf
     assert "CLOCK_PERIOD = 4.0" in conf
+    # get_ports must be Tcl-evaluated: ORFS copies the SDC verbatim to
+    # 1_2_yosys.sdc and load_design read_sdc treats a braced argument as a
+    # list of literal pin names ("pin '[get_ports' not found", STA-0132)
+    sdc = (tmp_path / "orfs" / "snn_core.sdc").read_text()
+    assert "create_clock -name clk -period 4.0 [get_ports clk]" in sdc
+    assert "{[get_ports" not in sdc
 
 
 def test_run_pnr_docker_missing_returns_fail_verdict(tmp_path, monkeypatch):

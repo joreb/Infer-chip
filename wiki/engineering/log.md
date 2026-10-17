@@ -20,3 +20,10 @@
 - Moved 005-orfs-make-run-is-per-stage-noop.md to incidents/005-orfs-make-run-is-per-stage-noop.md with YAML frontmatter
 - Removed README.md and _template.md (content consolidated into index.md and procedures/)
 - Added cross-links between all pages to satisfy minimum link requirements
+
+## [2026-10-17] create | ENG-006 and ENG-007 incident pages
+
+- Created incidents/006-relative-docker-bind-paths.md: relative docker -v sources rejected as named volumes, fix resolves both mount sources, regression test test_run_pnr_mounts_are_absolute
+- Created incidents/007-design-name-equals-top-module.md: DESIGN_NAME hardcode against generator-named top module, yosys elaboration error, regression test in test_write_design_creates_config_and_rtl
+- Updated SCHEMA.md tag taxonomy with docker and yosys
+- Updated index.md with the two new incident rows and the page count
