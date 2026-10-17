@@ -54,5 +54,5 @@ anybody proposes variable T as a small feature.
 ## Related
 
 - [LLMs on SNN hardware](2026-10-17-llms-on-snn-hardware.md)
-- [BindsNET is not a golden model](2026-10-17-bindsnet-not-a-golden-model.md)
+- [BindSNET is a trainer, not a golden model](2026-10-17-bindsnet-not-a-golden-model.md)
 - [Wiki index](../../index.md)

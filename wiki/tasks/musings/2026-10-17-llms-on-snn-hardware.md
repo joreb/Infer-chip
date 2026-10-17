@@ -71,6 +71,7 @@ not by neuron science.
 
 ## Related
 
+- [RISC-V is a control plane for the SNN fabric, not the fabric itself](2026-10-17-riscv-is-control-plane-not-the-fabric.md): the integration-pattern answer to the parent question above.
 - [BindSNET is a trainer, not a golden model](2026-10-17-bindsnet-not-a-golden-model.md)
 - [Why not hls4ml for the fabric](2026-10-17-why-not-hls4ml-for-the-fabric.md)
 - [SpikeLLM is not a target for the fabric](2026-10-17-spikellm-is-not-a-target-for-the-fabric.md)

@@ -32,7 +32,7 @@ the verify loop.
 3. RISC-V as the neuron itself: SpiNNaker2 ships an RV32 core per neuron
    block and each core emulates many LIF neurons. Silicon-proven, but at
    LLM neuron counts it is compute-bound and loses the event-driven
-   energy argument — the thesis the fabric exists to test.
+   energy argument, the thesis the fabric exists to test.
 
 Architecture reference for the spiking-LLM line: SpikeGPT (RWKV-style
 linear attention, spiking). Its dense matmuls dominate energy; a pure
@@ -52,8 +52,8 @@ software-executed neurons also orphans the numpy-vs-RTL cocotb proof.
 ## Related
 
 - [Can one run LLMs on spiking neural network hardware?](2026-10-17-llms-on-snn-hardware.md)
-  — the parent question this answer extends.
+  : the parent question this answer extends.
 - [OpenSpike memory interface](../../../docs/openspike-memory-interface.md)
-  — the external-SRAM port pattern 1 slots directly onto.
+  : the external-SRAM port pattern 1 slots directly onto.
 - [ENG-005: ORFS make run is per-stage noop](../../incidents/005-orfs-make-run-is-per-stage-noop.md)
-  — the fabric's PnR loop pattern 1 must keep running unchanged.
+  : the fabric's PnR loop pattern 1 must keep running unchanged.

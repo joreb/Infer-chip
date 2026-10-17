@@ -112,14 +112,14 @@ names the bug page it links to, or "new" if it needs its own incident page.
 - Prior: very low. Listed for completeness because the coincidence of
   identical elapsed times was genuinely suspicious.
 
-### H7. KILLED: liberty/LEF mismatch (platform variant mixing) — proposed and killed same day
+### H7. KILLED: liberty/LEF mismatch (platform variant mixing), proposed and killed same day
 
 - Proposed by the peer session on the same run: sky130 standard cells from
   a different variant than the LEF would give load_design masters it
   cannot resolve (same ORD-2013 class as H3).
 - Killed with image-filesystem evidence, not journal evidence: inside
   image d4590b320d36, `flow/platforms/sky130hs/config.mk` is internally
-  consistent — TECH_LEF `sky130_fd_sc_hs.tlef`, SC_LEF
+  consistent: TECH_LEF `sky130_fd_sc_hs.tlef`, SC_LEF
   `sky130_fd_sc_hs_merged.lef`, LIB_FILES
   `sky130_fd_sc_hs__tt_025C_1v80.lib`, all `_hs_` and all resolved from
   PLATFORM_DIR. No mixing exists. This kill is sound (config content is
@@ -145,7 +145,7 @@ Consequences for the set, per the killed-versus-did-not-reproduce rule:
   window. That window overlaps the second writer's activity, and line 2's
   failure itself (`cp: cannot stat ... No such file or directory` after a
   3.4 s synth) is confounded by a plausible concurrent-staging-overwrite
-  mechanism. Provenance unknown — absence of attribution is absence of
+  mechanism. Provenance unknown: absence of attribution is absence of
   evidence, so H4 stands on its mechanism argument only. Confirm/kill is
   unchanged: one `yosys> stat` and the `1_2_yosys.v` size check.
 - **Attempt-3 failure did not reproduce.** A rerun with identical staging
@@ -157,7 +157,7 @@ Consequences for the set, per the killed-versus-did-not-reproduce rule:
   windows (the second writer's first traceable footprint is the 02:11:57
   staging mtime; lines 0-1 correspond to the docker-125 and DESIGN_NAME
   defects fixed one by one before that). But "no evidence of overlap" is
-  weaker than "single writer" — the journal cannot distinguish writers at
+  weaker than "single writer": the journal cannot distinguish writers at
   all until the invocation-id fix lands.
 - **Tail property.** The identical outer tails across attempt failures
   (and the identical elapsed times) are properties of the reporting layer
@@ -175,12 +175,18 @@ Consequences for the set, per the killed-versus-did-not-reproduce rule:
 
 ## Related
 
-- wiki incident pages ENG-003/005/006/007 are the flow-bug chain this run
-  walked through; references below use the wiki/engineering paths valid at
-  the time of writing, wiki layout is being migrated by the peer session.
-- wiki/bugs/orchestrator-run-dir-has-no-lock.md — the two-writers defect
-  that forced the attribution sweep above (page written by the peer
-  session, fix owned by targets/).
-- wiki/tasks/hypothesis/ is this page's home; its README (folded into
-  wiki/index.md) names the one-file-per-live-failure convention.
+- [ENG-003](../../incidents/003-tail-without-pipefail.md),
+  [ENG-005](../../incidents/005-orfs-make-run-is-per-stage-noop.md),
+  [ENG-006](../../incidents/006-relative-docker-bind-paths.md) and
+  [ENG-007](../../incidents/007-design-name-equals-top-module.md) are the
+  flow-bug chain this run walked through; references below use the
+  wiki/engineering paths valid at the time of writing, wiki layout is
+  being migrated by the peer session.
+- [Concurrent orchestrator invocations clobber one shared run
+  directory](../../bugs/orchestrator-run-dir-has-no-lock.md): the
+  two-writers defect that forced the attribution sweep above (page
+  written by the peer session, fix owned by targets/).
+- [Engineering log procedure](../../procedures/add-an-engineering-log-entry.md)
+  names the one-file-per-live-failure convention; its README (folded into
+  [wiki/index.md](../../index.md)) is superseded by that page.
 - docs/backlog.md is unaffected; this is a debug record, not a direction.

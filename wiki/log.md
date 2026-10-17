@@ -86,3 +86,17 @@
 - Created bugs/orchestrator-run-dir-has-no-lock.md with symptom, root cause, workaround, proposed fix, and notes
 - Added Bugs section to wiki/index.md listing the new page
 - Added inbound link from incidents/003-tail-without-pipefail.md to the bug page in See also section
+
+## [2026-10-17] update | AI4CHIPS reference pages
+
+- Rebuilt 9 reference pages under references/
+
+## [2026-10-17] audit | 0 blocking, 0 warn, 0 info; 4 pages updated, 0 pages split
+
+- Lint: 7 blocking tasks/ misfiled findings, 1 musings/ missing-folder warn and 3 info findings remain, all pre-accepted in SCHEMA.md "Accepted findings"; no new blocking or warn finding introduced
+- Ran the full audit walk over incidents/001-007, bugs/orchestrator-run-dir-has-no-lock.md, procedures/add-an-engineering-log-entry.md, all 6 musings and the open hypothesis task page; check broken links (all resolve), index completeness (every page listed exactly once), page anatomy and the zero-dash project rule
+- tasks/hypothesis/2026-10-17-1-synth-load-design-fail.md: stripped 5 em dashes (project rule) and converted the Related section's plaintext wiki paths to real relative markdown links, satisfying the 2-outbound-link minimum
+- tasks/musings/2026-10-17-riscv-is-control-plane-not-the-fabric.md: stripped 4 em dashes; verified musing-type rules hold (dated, immutable, verdict section present, links resolve)
+- tasks/musings/2026-10-17-llms-on-snn-hardware.md: added a Related link to the RISC-V control-plane musing, clearing its only-inbound orphan warn; link-only edit, no verdict rewritten
+- tasks/musings/2026-10-17-spikellm-is-not-a-target-for-the-fabric.md: corrected the BindSNET Related link label to the target page's real title
+- Verified the new riscv musing's index entry links to the real file and matches its summary
