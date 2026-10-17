@@ -1,6 +1,8 @@
 """Orchestrator round-loop tests with fakes (no real sims)."""
 
+import json  # noqa: F401  (used in journal-line assertions below)
 import shutil  # noqa: F401  (module import guard parity)
+from pathlib import Path
 
 import pytest
 
@@ -83,3 +85,38 @@ def test_invalid_proposals_fall_back_default_then_previous(tmp_path, monkeypatch
     assert seen[0]["dummy"] is True and seen[0]["from_override"] == 5  # DEFAULT_CFG round 1
     assert seen[1]["dummy"] is True and seen[1]["from_override"] == 5  # keep previous
     assert "neurons" not in seen[0]
+
+
+def test_concurrent_invocations_isolated_run_dirs_and_journal_lines(tmp_path, monkeypatch):
+    """Two invocations on one out_root must not clobber each other (real
+    defect: an orphaned duplicate orchestrator ran concurrently and both
+    wrote into round_0, journal lines unattributable). Each invocation gets
+    its own per-round subdir, and every journal line names its writer."""
+    seen_dirs = []
+
+    class SpyTarget:
+        name = "digital"
+        DEFAULT_CFG = {"dummy": True}
+
+        def evaluate(self, cfg, out_dir):
+            seen_dirs.append(Path(out_dir))
+            return {"sim": {"verdict": "pass"}, "flow": {"verdict": "pass"}}
+
+    class PassOnce:  # proposes None every round -> DEFAULT_CFG path
+        def propose_config(self, journal, target):
+            return None
+        def analyze_failure(self, stage, logs, cfg):
+            return ""
+
+    monkeypatch.setattr(orch, "get_target", lambda name: SpyTarget())
+    for _ in range(2):
+        orch.run_loop("digital", PassOnce(), rounds=1, out_root=Path(tmp_path))
+    recs = [json.loads(l) for l in
+            (Path(tmp_path) / "digital" / "journal.jsonl").read_text().splitlines()
+            if l.strip()]
+    assert len(recs) == 2
+    invs = [r["inv"] for r in recs]
+    assert invs[0] != invs[1]                          # every line names its writer
+    assert len(seen_dirs) == 2 and seen_dirs[0] != seen_dirs[1]
+    # shared round dir, isolated per-invocation subdirs beneath it
+    assert seen_dirs[0].parent == seen_dirs[1].parent

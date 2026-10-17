@@ -8,6 +8,7 @@ every round fails.
 
 import argparse
 import json
+import secrets
 import sys
 from pathlib import Path
 
@@ -29,6 +30,11 @@ def run_loop(target: str, backend: Backend, rounds: int, out_root: Path,
              config_override: dict | None = None, retries: int = RETRIES) -> Path:
     tgt = get_target(target)
     journal = Journal(Path(out_root) / f"{target}" / "journal.jsonl")
+    # invocation id: two orchestrators on one out_root used to clobber the
+    # same round_{i} dir and the journal could not attribute lines (see
+    # wiki/bugs/orchestrator-run-dir-has-no-lock.md). Each invocation gets
+    # its own per-round subdirs and stamps every line it writes.
+    inv = secrets.token_hex(4)
     cfg: dict | None = None
     note = ""
 
@@ -56,7 +62,7 @@ def run_loop(target: str, backend: Backend, rounds: int, out_root: Path,
                 print(f"WARNING: {w} for {target} config; proceeding anyway",
                       file=sys.stderr)
 
-        run_dir = Path(out_root) / target / f"round_{round_i}"
+        run_dir = Path(out_root) / target / f"round_{round_i}" / f"inv_{inv}"
         run_dir.mkdir(parents=True, exist_ok=True)
         try:
             result = tgt.evaluate(cfg, run_dir)
@@ -70,9 +76,9 @@ def run_loop(target: str, backend: Backend, rounds: int, out_root: Path,
             logs = json.dumps(result.get(failed_stage, {}), default=str)
             note = backend.analyze_failure(failed_stage, logs, cfg)
 
-        journal.append({"round": round_i, "target": target, "config": cfg,
-                        "sim": result["sim"], "flow": result["flow"],
-                        "agent_note": note})
+        journal.append({"round": round_i, "target": target, "inv": inv,
+                        "config": cfg, "sim": result["sim"],
+                        "flow": result["flow"], "agent_note": note})
     return journal.path
 
 
