@@ -29,7 +29,10 @@ Image: openroad/orfs:latest d4590b320d36. Verbatim log:
 The flow's copy-out (`cp -r flow/results/... /results/`) never reached the
 host: the bind target was empty after container exit and no docker volume
 was created, so `metadata.json` and `6_final.gds` were lost with `--rm`.
-Every number above is quoted from the merged stage log with its line
+`flow.py` itself is clear of this: a direct mount+cp+chown test against
+the same image succeeds (rc=0, file lands on the host), so the loss came
+from the manual rerun wrapper's mounts, which were not recorded. Every
+number above is quoted from the merged stage log with its line
 evidence. Until a rerun captures the results tree, metrics that parse_metrics
 reads (instance__area__stdcell, worst setup slack from metadata) are not
 re-derivable from this record; the FLW-0009 and cell-type-report lines are.
