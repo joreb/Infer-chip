@@ -99,6 +99,7 @@ Musing pages record dated, immutable decisions and deliberations from a single m
 - [Why not hls4ml for the fabric itself?](tasks/musings/2026-10-17-why-not-hls4ml-for-the-fabric.md). The block is an event-driven state machine, not a dataflow inference graph; hls4ml adds no hardware value.
 - [BindSNET is a trainer, not a golden model](tasks/musings/2026-10-17-bindsnet-not-a-golden-model.md). BindSNET is a PyTorch simulator for learning; it replaces neither the golden model nor a hardware path.
 - [SpikeLLM is not a target for the fabric](tasks/musings/2026-10-17-spikellm-is-not-a-target-for-the-fabric.md). SpikeLLM redesigns language models with spiking mechanisms, but the scale and spike mechanism both mismatch our 256-neuron fabric.
+- [RISC-V is a control plane for the SNN fabric, not the fabric itself](tasks/musings/2026-10-17-riscv-is-control-plane-not-the-fabric.md). RISC-V alone is not a spiking-LLM engine; RISC-V orchestrating the LIF fabric is, via control-plane or coprocessor patterns, not per-neuron cores.
 
 ### Hypotheses
 
