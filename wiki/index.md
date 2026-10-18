@@ -82,10 +82,20 @@ Bug pages record defects with no fix yet, or fixes that span many pages.
 
 - [Concurrent orchestrator invocations clobber one shared run directory](bugs/orchestrator-run-dir-has-no-lock.md). Two runs wrote the same journal and results tree without coordination or error detection. Fixed in a8241a1 with one directory and one `inv` stamp per run. Beginner tutorial included.
 
+## Tutorials
+
+Tutorials teach chip design on this project, for a reader who is new to it. Read them in order.
+
+1. [How the spiking neuron core works](tutorials/how-the-spiking-neuron-core-works.md). LIF neurons in fixed-point, the golden model, the four FSM phases, the weight stores.
+2. [From Verilog to a chip layout](tutorials/from-verilog-to-gds.md). RTL, parity simulation, the ORFS stages, where the GDS is, and the pitfalls we found.
+3. [How to read the PPA metrics](tutorials/reading-ppa-metrics.md). Power, slack, area, wirelength and DRC; one key per stage; how to compare two runs.
+4. [How to run the agent loop](tutorials/running-the-agent-loop.md). Rounds, backends, the run directory, the journal, and how to record evidence.
+
 ## Concepts
 
 Concept pages explain an idea or a mechanism.
 
+- [Glossary of key concepts](concepts/glossary.md). 77 terms from accumulator to Yosys, each defined for this project.
 - [Weight storage hierarchy, from SSD to the core](concepts/weight-storage-hierarchy.md). Why the core cannot read weights from SSD or DDR5 directly, the load-then-run path (GitHub #11), streaming, and a scale check for 1 T-parameter models. Beginner background included.
 
 ## Summaries

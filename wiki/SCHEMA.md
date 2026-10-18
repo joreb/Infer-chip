@@ -63,7 +63,7 @@ A relative link from a page in a sub-area to the wiki index is `../../index.md`.
 title: Page Title
 created: YYYY-MM-DD
 updated: YYYY-MM-DD
-type: incident | procedure | reference | bug | test | solution | concept | entity | comparison | query | summary | musing | task
+type: incident | procedure | reference | bug | test | solution | concept | entity | comparison | query | summary | musing | task | tutorial
 tags: [from taxonomy below]
 sources: []
 status: open | closed
@@ -105,6 +105,7 @@ Rule: every tag on a page must appear in this taxonomy. To use a new tag, add it
 | summary | An overview or topic-organized digest |
 | musing | A dated, immutable record of a decision or a deliberation at one point in time |
 | task | An investigation record that stays open while evidence arrives and freezes when closed |
+| tutorial | A lesson for a newcomer to chip design, with a goal, steps on this project, and check questions |
 
 ## Reference Pages
 
@@ -171,6 +172,20 @@ one fix spans many pages. Use a test page when the test covers many pages or whe
 one defect. Use a solution page when one remedy already applies to two or more defects and you want
 one place to state it. A solution page links to every incident page it covers, which satisfies the
 outbound-link minimum. Use a musing page when you want a dated, immutable record of a decision or a deliberation at this moment. Use a task page to record a failure under investigation while evidence arrives and to preserve killed hypotheses after the investigation closes.
+
+## Tutorial Pages
+
+Answers "how do I learn this, step by step, on this project?" Written for a reader who is new to
+chip design. Tutorials are numbered and each one names the next. Sections in this order:
+
+- Goal and what you need: what the reader can do after the tutorial, and the tutorials before it
+- Numbered lessons: explanation, real commands and real values from this project
+- Pitfalls: optional, links to incident pages
+- Check your understanding: 2 or 3 questions with answers
+- Next: the next tutorial
+
+Terms in bold are defined in `concepts/glossary.md`. A procedure page states a rule for a person
+who already knows the domain. A tutorial teaches the domain. (Added 2026-10-18.)
 
 ## Procedure Pages
 

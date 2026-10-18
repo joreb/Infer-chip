@@ -140,3 +140,9 @@
 
 - New concepts/weight-storage-hierarchy.md: SSD, DDR5, HBM and on-chip memory against the needs of the core (512-bit word per cycle, fixed 1-cycle latency); load-then-run path over SPI (GitHub #11); double-buffered streaming; scale check for 1 Tb and 1 T-parameter models (about 95 sky130 wafers of OpenRAM per Tb).
 - index.md: new Concepts section.
+## [2026-10-18] update | Tutorials and glossary
+
+- New tutorials/ type folder with 4 numbered tutorials for chip-design newcomers: the spiking neuron core, Verilog to GDS, reading PPA metrics, running the agent loop. Each has real commands and values from this project and check questions.
+- New concepts/glossary.md: key terms in alphabetical order, each defined for this project.
+- SCHEMA.md: new page type `tutorial` with its section anatomy.
+- index.md: new Tutorials section; glossary under Concepts.
