@@ -88,5 +88,8 @@ between 128 and 256 neurons. The dashed lines are projections.
 - **No comparison with published chips.** They use other nodes (14 to 28 nm against 130 nm),
   measured power and their own memories.
 
+For how the core would connect to a robot arm, see
+[robot integration over SPI](../tasks/musings/2026-10-19-edge-robot-integration-spi-not-pcie.md) (GitHub #13).
+
 Related: [glossary](../concepts/glossary.md), [tutorial 3](../tutorials/reading-ppa-metrics.md),
 [index](../index.md).
