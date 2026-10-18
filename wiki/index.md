@@ -111,6 +111,7 @@ Summary pages digest a topic from the literature.
 
 Comparison pages put two measured designs side by side with a verdict.
 
+- [Photonic MZI mesh against the digital LIF core, same SNN task](comparisons/photonic-vs-digital-snn-core.md). gdsfactory layouts (N = 4, 8, 16) and an SVD + Clements model: about 150x the area, over 1,000x the energy at robot timestep rates, 1.3 ns latency; competitive only near 1 GHz with low static power.
 - [On-die ROM weights against external SRAM weights, 128 neurons](comparisons/rom-vs-external-sram-weights.md). Dense-ROM baseline (GitHub #2): +5.4% area, +26% wirelength, -2.9% power; the ROM is cheap only because its zero weights are removed.
 
 ## Procedures

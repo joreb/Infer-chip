@@ -1,0 +1,35 @@
+[
+ {
+  "n": 4,
+  "cell": "mzi2x2_2x2_phase_shifter",
+  "gdsfactory": "9.51.0",
+  "mzi": 12,
+  "attenuator": 4,
+  "heater": 4,
+  "width_um": 3879.0,
+  "height_um": 146.0,
+  "bbox_mm2": 0.566334
+ },
+ {
+  "n": 8,
+  "cell": "mzi2x2_2x2_phase_shifter",
+  "gdsfactory": "9.51.0",
+  "mzi": 56,
+  "attenuator": 8,
+  "heater": 8,
+  "width_um": 6855.0,
+  "height_um": 266.0,
+  "bbox_mm2": 1.82343
+ },
+ {
+  "n": 16,
+  "cell": "mzi2x2_2x2_phase_shifter",
+  "gdsfactory": "9.51.0",
+  "mzi": 240,
+  "attenuator": 16,
+  "heater": 16,
+  "width_um": 12807.0,
+  "height_um": 506.0,
+  "bbox_mm2": 6.480342
+ }
+]

@@ -100,7 +100,8 @@ def realized_matrix(prog: dict, n: int, phase_bits, phase_noise_rad, rng) -> np.
 
 
 def photonic_lif_run(cfg: dict, train: np.ndarray, phase_bits=None, phase_noise_rad=0.0,
-                     laser_mw=None, adc_bits=None, seed: int = 0) -> np.ndarray:
+                     laser_mw=None, adc_bits=None, seed: int = 0,
+                     loss_db_per_mzi: float = INS_LOSS_DB_PER_MZI) -> np.ndarray:
     """Photonic W @ s, then the same integer LIF update as the golden model."""
     rng = np.random.default_rng(seed)
     n = int(cfg["neurons"])
@@ -109,7 +110,7 @@ def photonic_lif_run(cfg: dict, train: np.ndarray, phase_bits=None, phase_noise_
     full_scale = prog["scale"] * np.sqrt(n)  # |A s| <= scale * |s| <= scale * sqrt(n)
     sigma_n = 0.0
     if laser_mw is not None:
-        loss_db = INS_LOSS_DB_PER_MZI * (2 * n + 1)  # two meshes + attenuator per path
+        loss_db = loss_db_per_mzi * (2 * n + 1)  # two meshes + attenuator per path
         p_rx = laser_mw / n * 10 ** (-loss_db / 10)
         sigma_n = full_scale * np.sqrt(P_NOISE_MW / p_rx)
     ref = LIFModel(cfg)  # parameters only; the golden model stays untouched

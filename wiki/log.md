@@ -163,3 +163,9 @@
 
 - New tasks/musings/2026-10-19-edge-robot-integration-spi-not-pcie.md: FPGA prototype on a QSPI daughterboard for a robot arm; derived rates and a 1 ms latency budget; Yosys FPGA resource estimate (about 9.9k LUT and 128 DSP on Xilinx 7-series, 9.1k LUT4 and 128 MULT18 on ECP5, weight memory excluded).
 - GitHub #13 opened for the FPGA prototype and robot interface.
+## [2026-10-19] update | Photonic core against the digital core
+
+- New comparisons/photonic-vs-digital-snn-core.md with plots 7 to 10.
+- targets/photonic/svd_mesh.py: SVD + Clements decomposition of the SNN weight matrix and a photonic LIF forward model; tests in tests/test_svd_mesh.py.
+- tools/photonic_layout.py: gdsfactory 9.51.0 layouts of the SVD mesh for N = 4, 8, 16 in raw/assets/photonic/ (generic PDK, no foundry DRC).
+- tools/plot_photonic_vs_digital.py: layout at the same scale, area, accuracy sweeps, energy and latency with ASSUMED ranges.

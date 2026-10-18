@@ -88,6 +88,8 @@ between 128 and 256 neurons. The dashed lines are projections.
 - **No comparison with published chips.** They use other nodes (14 to 28 nm against 130 nm),
   measured power and their own memories.
 
+For the same task on a photonic MZI mesh, see
+[photonic against digital](../comparisons/photonic-vs-digital-snn-core.md).
 For how the core would connect to a robot arm, see
 [robot integration over SPI](../tasks/musings/2026-10-19-edge-robot-integration-spi-not-pcie.md) (GitHub #13).
 
