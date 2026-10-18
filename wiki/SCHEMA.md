@@ -122,6 +122,8 @@ Generated. Sections in this order:
 Answers "what happened, why, and how was it fixed?" One page per defect, limit or decision. Sections
 in this order:
 
+- Background for beginners: optional, explains the chip-design terms that a newcomer needs to read
+  the page (added 2026-10-18)
 - Symptom: what a person sees when the fault happens, with the exact error text
 - Root cause: why the fault happens, with the file name and the line number
 - Fix: what changed and where
@@ -134,6 +136,7 @@ in this order:
 A defect page when the defect has no fix yet, or when one fix spans many pages. One page per defect.
 Sections in this order:
 
+- Background for beginners: optional, as on incident pages
 - Symptom: what a person sees when the fault happens, with the exact error text
 - Root cause: why the fault happens, with the file name and the line number
 - Workaround: optional steps to reduce the impact

@@ -73,12 +73,14 @@ Incident pages record defects, limits and decisions in this project with their s
 - [ENG-005: make run in the ORFS image is a per-stage noop that returns rc=0](incidents/005-orfs-make-run-is-per-stage-noop.md). Wrong make target in the flow wrapper invokes a noop helper instead of the full PnR.
 - [ENG-006: relative docker bind paths are rejected as named volumes](incidents/006-relative-docker-bind-paths.md). Orchestrator-only failure, docker daemon rejects relative paths as volume names before make starts.
 - [ENG-007: DESIGN_NAME must equal the generated top module](incidents/007-design-name-equals-top-module.md). Hardcoded config name against a generator-named top module fails yosys elaboration.
+- [ENG-009: PnR results never reached the host and metadata.json was never written](incidents/009-copy-out-path-and-no-metadata.md). A cd in the container script broke every copy path, and bare make never writes the metrics file. Beginner tutorial included.
+- [ENG-010: parse_metrics took clock-tree-stage values instead of final values](incidents/010-parse-metrics-took-cts-stage-values.md). Metadata holds one key per stage, and the first match was the CTS stage. Beginner tutorial included.
 
 ## Bugs
 
 Bug pages record defects with no fix yet, or fixes that span many pages.
 
-- [Concurrent orchestrator invocations clobber one shared run directory](bugs/orchestrator-run-dir-has-no-lock.md). Two runs write the same journal and results tree without coordination or error detection.
+- [Concurrent orchestrator invocations clobber one shared run directory](bugs/orchestrator-run-dir-has-no-lock.md). Two runs wrote the same journal and results tree without coordination or error detection. Fixed in a8241a1 with one directory and one `inv` stamp per run. Beginner tutorial included.
 
 ## Procedures
 

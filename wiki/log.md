@@ -121,3 +121,11 @@
 - wiki/SCHEMA.md: layout rule now states two deliberate exceptions, tasks/ and raw/papers/.
 - The spikellm musing mentions the new path.
 - Both generator selftests pass; a full offline rebuild ran clean from the new location.
+## [2026-10-18] update | Incidents ENG-009 and ENG-010, bugs page rewritten as a beginner tutorial
+
+- New incidents/009-copy-out-path-and-no-metadata.md: GitHub #1. The cd flow in the container script broke the copy paths, and bare make never writes metadata.json. Fix dfef3b6, also docker_cmd.txt, named container killed on timeout, 7200 s timeout. Proof: orchestrated 128-neuron run inv f6599c24.
+- New incidents/010-parse-metrics-took-cts-stage-values.md: parse_metrics took the first stage key (cts__). Fix f6d6b51 names finish__ and detailedroute__ keys first; real-metadata fixture test confirmed to fail on the old code.
+- bugs/orchestrator-run-dir-has-no-lock.md: rewritten as a tutorial for chip-design beginners, marked fixed (a8241a1, GitHub #8), regression test named.
+- SCHEMA.md: optional "Background for beginners" section for incident and bug pages.
+- ENG-008 stays reserved for the SDC braces page (GitHub #3).
+- In progress, no page yet: dense-ROM baseline (GitHub #2, commit 175c76c). The comparison page comes when the 128-neuron ROM run has numbers.
