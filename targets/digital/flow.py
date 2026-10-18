@@ -110,7 +110,41 @@ def write_design(cfg: dict, out_dir: Path) -> dict:
     return {"config": config, "rtl": rtl, "design_name": name}
 
 
-def run_pnr(cfg: dict, out_dir: Path, timeout_s: int = 3600) -> dict:
+def container_script(name: str, uid: int, gid: int,
+                     design: str = "/mnt/design", out: str = "/results") -> str:
+    """Bash script run inside the ORFS image (cwd = the ORFS checkout).
+
+    Bare `make` never runs genMetrics: metadata.json comes only from
+    `make metadata-generate`, which writes it under flow/reports/ (#1). The
+    script copies results, reports and logs out, and puts metadata.json next
+    to the results so parse_metrics(<results>/base) finds it.
+
+    The `cd flow` persists for the rest of the script, so every copy path is
+    relative to flow/. Before #1 the copy used flow/results/..., which then
+    resolved to flow/flow/results: cp failed, and the script still exited 0.
+    Now a failed copy makes the script fail.
+    """
+    mk = f"DESIGN_CONFIG=./designs/{PLATFORM}/{name}.mk"
+    sub = f"{PLATFORM}/{name}"
+    keep = "|| { [ $rc -eq 0 ] && rc=1; }"
+    return (
+        "set -o pipefail; "
+        f"mkdir -p flow/designs/src/snn_core flow/designs/{PLATFORM} && "
+        f"cp {design}/snn_core.v {design}/snn_core.sdc flow/designs/src/snn_core/ && "
+        f"cp {design}/config.mk flow/designs/{PLATFORM}/{name}.mk && "
+        f"cd flow && make {mk} 2>&1 | tail -5; "
+        "rc=$?; "
+        f"if [ $rc -eq 0 ]; then make {mk} metadata-generate 2>&1 | tail -5; rc=$?; fi; "
+        f"mkdir -p {out}/{name} {out}/reports {out}/logs; "
+        f"cp -r results/{sub}/. {out}/{name}/ {keep}; "
+        f"cp -r reports/{sub} {out}/reports/{name} {keep}; "
+        f"cp -r logs/{sub} {out}/logs/{name} {keep}; "
+        f"cp reports/{sub}/base/metadata.json {out}/{name}/base/ {keep}; "
+        f"chown -R {uid}:{gid} {out}; exit $rc"
+    )
+
+
+def run_pnr(cfg: dict, out_dir: Path, timeout_s: int = 7200) -> dict:
     """Synthesize + place + route in ORFS docker. Returns metrics; never raises.
 
     The openroad/orfs image carries its own prebuilt flow tree, so nothing on
@@ -133,27 +167,23 @@ def run_pnr(cfg: dict, out_dir: Path, timeout_s: int = 3600) -> dict:
     if out_results.exists():
         shutil.rmtree(out_results)
 
-    cmd = (
-        "set -o pipefail; "
-        "mkdir -p flow/designs/src/snn_core flow/designs/" f"{PLATFORM}" " && "
-        f"cp /mnt/design/snn_core.v /mnt/design/snn_core.sdc flow/designs/src/snn_core/ && "
-        f"cp /mnt/design/config.mk flow/designs/{PLATFORM}/{name}.mk && "
-        f"cd flow && make DESIGN_CONFIG=./designs/{PLATFORM}/{name}.mk 2>&1 | tail -5; "
-        "rc=$?; "
-        "mkdir -p /results && "
-        f"cp -r flow/results/{PLATFORM}/{name} /results/{name}; "
-        f"chown -R {uid}:{gid} /results; exit $rc"
-    )
+    cmd = container_script(name, uid, gid)
     # -v bind sources must be absolute host paths: docker treats a relative
     # path as a named volume and rejects it ("invalid characters for a local
     # volume name ... use absolute path")
     results_host.mkdir(parents=True, exist_ok=True)
+    container = f"orfs-{name}-{__import__('secrets').token_hex(4)}"
     docker_cmd = [
-        "docker", "run", "--rm", "-u", "0:0",  # writes over the root-owned image tree
+        "docker", "run", "--rm", "--name", container,
+        "-u", "0:0",  # writes over the root-owned image tree
         "-v", f"{stage_dir(out_dir).resolve()}:/mnt/design",
         "-v", f"{results_host.resolve()}:/results",
         IMAGE, "bash", "-c", cmd,
     ]
+    # record the exact command: the 2026-10-17 artifact loss could not be
+    # traced because the wrapper's mounts were never written down (#1)
+    (Path(out_dir) / "docker_cmd.txt").write_text(
+        " ".join(__import__("shlex").quote(a) for a in docker_cmd) + "\n")
     for attempt in range(2):
         try:
             proc = subprocess.run(docker_cmd, capture_output=True, text=True,
@@ -163,7 +193,10 @@ def run_pnr(cfg: dict, out_dir: Path, timeout_s: int = 3600) -> dict:
             reason = (f"orfs make exited {proc.returncode}: "
                       f"{proc.stdout[-400:]}{proc.stderr[-400:]}")
         except subprocess.TimeoutExpired:
-            reason = f"orfs make timeout {timeout_s}s"
+            # the timeout kills the docker CLI, not the container; a retry
+            # would start a second ORFS run beside the first one
+            subprocess.run(["docker", "kill", container], capture_output=True)
+            return FAIL(f"orfs make timeout {timeout_s}s")
         if attempt == 1:
             return FAIL(reason)
     m = parse_metrics(out_results / "base")

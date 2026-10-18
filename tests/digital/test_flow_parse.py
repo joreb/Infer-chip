@@ -58,3 +58,115 @@ def test_run_pnr_docker_missing_returns_fail_verdict(tmp_path, monkeypatch):
     monkeypatch.setattr(flow.shutil, "which", lambda name: None)
     m = flow.run_pnr(CFG, tmp_path, timeout_s=60)
     assert m["verdict"] == "fail" and "docker" in m["reason"].lower()
+
+
+def _fake_docker(tmp_path, monkeypatch, run_impl):
+    """Patch docker presence + subprocess.run; return the list of calls."""
+    import targets.digital.flow as flow
+    monkeypatch.setattr(flow.shutil, "which", lambda name: "/usr/bin/docker")
+    calls = []
+
+    def fake_run(cmd, **kw):
+        calls.append(cmd)
+        return run_impl(cmd, **kw)
+
+    monkeypatch.setattr(flow.subprocess, "run", fake_run)
+    return flow, calls
+
+
+def test_run_pnr_generates_metadata_and_copies_reports_and_logs(tmp_path, monkeypatch):
+    # bare `make` never runs genMetrics; ORFS writes metadata.json only from
+    # `make metadata-generate`, into flow/reports/, not flow/results/ (#1)
+    import subprocess
+    ok = lambda cmd, **kw: subprocess.CompletedProcess(cmd, 0, "", "")
+    flow, calls = _fake_docker(tmp_path, monkeypatch, ok)
+    flow.run_pnr(CFG, tmp_path, timeout_s=60)
+    docker_cmd = calls[0]
+    sh = docker_cmd[-1]
+    assert "metadata-generate" in sh
+    assert "reports/sky130hs/snn_core_256" in sh
+    assert "logs/sky130hs/snn_core_256" in sh
+    assert "metadata.json" in sh
+    # the run is reproducible from the record: full command saved on host
+    assert (tmp_path / "docker_cmd.txt").read_text().strip().startswith("docker run")
+    assert "--name" in docker_cmd
+
+
+def test_run_pnr_timeout_kills_named_container_and_does_not_retry(tmp_path, monkeypatch):
+    # subprocess timeout kills the docker CLI only; the container keeps
+    # running, and a retry would start a second ORFS run beside it
+    import subprocess
+
+    def run_impl(cmd, **kw):
+        if cmd[:2] == ["docker", "run"]:
+            raise subprocess.TimeoutExpired(cmd, kw.get("timeout"))
+        return subprocess.CompletedProcess(cmd, 0, "", "")
+
+    flow, calls = _fake_docker(tmp_path, monkeypatch, run_impl)
+    m = flow.run_pnr(CFG, tmp_path, timeout_s=60)
+    runs = [c for c in calls if c[:2] == ["docker", "run"]]
+    kills = [c for c in calls if c[:2] == ["docker", "kill"]]
+    name = runs[0][runs[0].index("--name") + 1]
+    assert len(runs) == 1
+    assert kills and kills[0][-1] == name
+    assert m["verdict"] == "fail" and "timeout" in m["reason"]
+
+
+def test_run_pnr_default_timeout_covers_a_128_neuron_run():
+    # the 2026-10-17 128-neuron run took about 55 min (3300 s)
+    import inspect
+    from targets.digital.flow import run_pnr as rp
+    assert inspect.signature(rp).parameters["timeout_s"].default >= 7200
+
+
+STUB_MAKE = """#!/bin/bash
+# stands in for ORFS make: writes the trees that real ORFS writes, in flow/
+sub=sky130hs/snn_core_256
+if [ "$2" = metadata-generate ]; then
+  echo '{"finish__timing__setup__ws": 1.0}' > reports/$sub/base/metadata.json
+else
+  mkdir -p results/$sub/base reports/$sub/base logs/$sub/base
+  echo gds > results/$sub/base/6_final.gds
+  echo log > logs/$sub/base/5_2_route.log
+fi
+"""
+
+
+def _run_script(tmp_path, script):
+    import subprocess
+    root, design, out, bin_ = (tmp_path / d for d in ("orfs", "design", "out", "bin"))
+    for d in (root / "flow", design, out, bin_):
+        d.mkdir(parents=True)
+    for f in ("snn_core.v", "snn_core.sdc", "config.mk"):
+        (design / f).write_text("x")
+    (bin_ / "make").write_text(STUB_MAKE)
+    (bin_ / "make").chmod(0o755)
+    env = {"PATH": f"{bin_}:/usr/bin:/bin"}
+    proc = subprocess.run(["bash", "-c", script], cwd=root, env=env,
+                          capture_output=True, text=True)
+    return proc, out
+
+
+def test_container_script_puts_gds_metadata_and_logs_on_the_host(tmp_path):
+    # executes the real script: the 2026-10-17 copy used flow/results after
+    # `cd flow`, cp failed, and the script still exited 0 (#1)
+    import os
+    from targets.digital.flow import container_script
+    script = container_script("snn_core_256", os.getuid(), os.getgid(),
+                              design=str(tmp_path / "design"), out=str(tmp_path / "out"))
+    proc, out = _run_script(tmp_path, script)
+    assert proc.returncode == 0, proc.stderr
+    assert (out / "snn_core_256/base/6_final.gds").exists()
+    assert (out / "snn_core_256/base/metadata.json").exists()
+    assert (out / "logs/snn_core_256/base/5_2_route.log").exists()
+    assert parse_metrics(out / "snn_core_256/base")["verdict"] == "pass"
+
+
+def test_container_script_fails_when_copy_out_fails(tmp_path):
+    # a flow that produced nothing to copy must not report success
+    import os
+    from targets.digital.flow import container_script
+    script = container_script("snn_core_256", os.getuid(), os.getgid(),
+                              design=str(tmp_path / "design"), out=str(tmp_path / "out"))
+    proc, _ = _run_script(tmp_path, script.replace("make DESIGN_CONFIG", "true DESIGN_CONFIG"))
+    assert proc.returncode != 0
