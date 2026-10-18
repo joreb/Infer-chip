@@ -124,7 +124,9 @@ Spiking models at this scale do not exist yet
 
 1. GitHub #11: `weight_store: loaded`, an on-chip SRAM with a SPI write port, loaded from a file.
 2. Later: the valid/ready handshake and double buffering for streaming from DRAM.
-3. Later: banked weight memory beside neuron clusters
+3. Possible use: an experience memory on disk that the agent streams to the core for calibration
+   ([musing](../tasks/musings/2026-10-18-snn-experience-memory-for-calibration.md)).
+4. Later: banked weight memory beside neuron clusters
    ([fractal and hierarchical designs](../summaries/fractal-and-hierarchical-neuromorphic-designs.md)).
 
 Related: [index](../index.md).

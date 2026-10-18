@@ -74,6 +74,7 @@ the number of calibration rounds to reach a target error, and the final error.
 ## Related
 
 - [Weight storage hierarchy](../../concepts/weight-storage-hierarchy.md)
+- [On-chip learning for SNN hardware](../../summaries/on-chip-learning-for-snn-hardware.md): SDSP fits the one-word-per-source layout
 - [LLMs on SNN hardware](2026-10-17-llms-on-snn-hardware.md)
 - [Tutorial 4: How to run the agent loop](../../tutorials/running-the-agent-loop.md)
 - [index](../../index.md)

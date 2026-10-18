@@ -149,3 +149,8 @@
 ## [2026-10-18] update | Musing: SNN experience memory for calibration
 
 - New tasks/musings/2026-10-18-snn-experience-memory-for-calibration.md: layered design (spiking core, CPU records, HDD store, LLM-agent retrieval, reload over GitHub #11), gaps in the current core, and the with/without-memory proof metric.
+## [2026-10-18] update | On-chip learning summary and arXiv fetch tool
+
+- New summaries/on-chip-learning-for-snn-hardware.md: ODIN (SDSP), Loihi (learning engine), ReckOn (e-prop), SpiNNaker 2, ITP-STDP; layout analysis: SDSP costs one write-back per source spike in our word-per-source memory, STDP potentiation costs 128 read-write pairs per target spike.
+- New tools/fetch_arxiv.py: downloads cited arXiv PDFs to raw/papers/<id>.pdf, checks %PDF, prints titles from the arXiv API. 3 new PDFs saved; all 16 arXiv ids linked from wiki pages exist on arXiv.
+- The experience-memory musing links the new summary (same-day edit).
