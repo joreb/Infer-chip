@@ -13,7 +13,7 @@ import shutil
 import subprocess
 from pathlib import Path
 
-from targets.digital.rtl_gen import generate_rtl, module_name
+from targets.digital.rtl_gen import generate_rtl, module_name, pad_size
 
 PLATFORM = "sky130hs"
 IMAGE = "openroad/orfs:latest"
@@ -110,6 +110,13 @@ def write_design(cfg: dict, out_dir: Path) -> dict:
         f"export CLOCK_PERIOD = {float(cfg.get('clock_ns', 4.0))}\n"
         "export CLOCK_PORT = clk\n"
     )
+    if cfg.get("weight_store") == "rom":
+        # yosys turns the ROM case tree into one ROM memory; ORFS stops above
+        # SYNTH_MEMORY_MAX_BITS (default 4096). Raise it to the ROM size so the
+        # constant ROM maps to logic; never SYNTH_MOCK_LARGE_MEMORIES (#2)
+        p = pad_size(cfg)
+        with open(config, "a") as f:
+            f.write(f"export SYNTH_MEMORY_MAX_BITS = {p * p * int(cfg['weight_width'])}\n")
     (stage / "snn_core.sdc").write_text(
         f"create_clock -name clk -period {float(cfg.get('clock_ns', 4.0))} "
         "[get_ports clk]\n"

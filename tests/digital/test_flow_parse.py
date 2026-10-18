@@ -184,3 +184,16 @@ def test_parse_metrics_picks_final_stage_values_from_real_metadata():
     assert abs(m["area_mm2"] - 0.704933) < 1e-9    # finish__..._area__stdcell
     assert m["wirelength_um"] == 1449559           # detailedroute__route__wirelength
     assert m["drc"] == 0                           # final, not iter__0 (530)
+
+
+def test_write_design_rom_raises_the_synth_memory_limit_to_the_rom_size(tmp_path):
+    # yosys turns the ROM case tree into one ROM memory (128 x 510 = 65280
+    # bits at 128 neurons); ORFS stops above SYNTH_MEMORY_MAX_BITS (4096 by
+    # default): "Synthesized memory size 4096 exceeds SYNTH_MEMORY_MAX_BITS" (#2)
+    rom = {**CFG, "neurons": 128, "weight_store": "rom"}
+    write_design(rom, tmp_path / "rom")
+    conf = (tmp_path / "rom/orfs/config.mk").read_text()
+    assert "export SYNTH_MEMORY_MAX_BITS = 65536\n" in conf
+    assert "MOCK" not in conf  # a mock memory would fake the baseline
+    write_design({**CFG, "neurons": 128}, tmp_path / "ext")
+    assert "SYNTH_MEMORY_MAX_BITS" not in (tmp_path / "ext/orfs/config.mk").read_text()
