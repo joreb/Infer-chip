@@ -126,6 +126,7 @@ Working records grouped by activity rather than by type. This area holds two sub
 Musing pages record dated, immutable decisions and deliberations from a single moment in time.
 
 - [Can one run LLMs on spiking neural network hardware?](tasks/musings/2026-10-17-llms-on-snn-hardware.md). Large-scale spiking language models remain blocked by compute shape and memory bandwidth, not neuron science.
+- [SNN with a CPU-built experience memory on disk, streamed by an LLM agent for calibration](tasks/musings/2026-10-18-snn-experience-memory-for-calibration.md). Feasible now with the memory bank on the host and weights reloaded over GitHub #11; an on-chip learned memory needs STDP-class learning first.
 - [BindSNET for model gen and hls4ml for RTL?](tasks/musings/2026-10-17-bindsnet-plus-hls4ml-seam.md). The proposed chain breaks at the seam due to missing SNN support in hls4ml and fundamental architectural mismatch.
 - [Why not hls4ml for the fabric itself?](tasks/musings/2026-10-17-why-not-hls4ml-for-the-fabric.md). The block is an event-driven state machine, not a dataflow inference graph; hls4ml adds no hardware value.
 - [BindSNET is a trainer, not a golden model](tasks/musings/2026-10-17-bindsnet-not-a-golden-model.md). BindSNET is a PyTorch simulator for learning; it replaces neither the golden model nor a hardware path.

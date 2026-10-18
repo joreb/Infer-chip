@@ -146,3 +146,6 @@
 - New concepts/glossary.md: key terms in alphabetical order, each defined for this project.
 - SCHEMA.md: new page type `tutorial` with its section anatomy.
 - index.md: new Tutorials section; glossary under Concepts.
+## [2026-10-18] update | Musing: SNN experience memory for calibration
+
+- New tasks/musings/2026-10-18-snn-experience-memory-for-calibration.md: layered design (spiking core, CPU records, HDD store, LLM-agent retrieval, reload over GitHub #11), gaps in the current core, and the with/without-memory proof metric.
