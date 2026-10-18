@@ -159,3 +159,7 @@
 - New summaries/128-neuron-core-performance.md with six plots from tools/plot_performance.py (git-tracked inputs only, each plot labelled MEASURED, DERIVED or PROJECTION).
 - New wiki/raw/assets/plots/*.png and wiki/raw/assets/pnr-128/*.webp (ORFS layout renders of runs f6599c24 and 15914a90).
 - Evidence: 16-neuron metadata of runs c1211375 and 88827052 copied to runs_digital_e2e/digital/evidence/.
+## [2026-10-19] update | Musing: robot integration over SPI, not PCIe
+
+- New tasks/musings/2026-10-19-edge-robot-integration-spi-not-pcie.md: FPGA prototype on a QSPI daughterboard for a robot arm; derived rates and a 1 ms latency budget; Yosys FPGA resource estimate (about 9.9k LUT and 128 DSP on Xilinx 7-series, 9.1k LUT4 and 128 MULT18 on ECP5, weight memory excluded).
+- GitHub #13 opened for the FPGA prototype and robot interface.
