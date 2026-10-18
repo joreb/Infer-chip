@@ -154,3 +154,8 @@
 - New summaries/on-chip-learning-for-snn-hardware.md: ODIN (SDSP), Loihi (learning engine), ReckOn (e-prop), SpiNNaker 2, ITP-STDP; layout analysis: SDSP costs one write-back per source spike in our word-per-source memory, STDP potentiation costs 128 read-write pairs per target spike.
 - New tools/fetch_arxiv.py: downloads cited arXiv PDFs to raw/papers/<id>.pdf, checks %PDF, prints titles from the arXiv API. 3 new PDFs saved; all 16 arXiv ids linked from wiki pages exist on arXiv.
 - The experience-memory musing links the new summary (same-day edit).
+## [2026-10-18] update | 128-neuron performance plots
+
+- New summaries/128-neuron-core-performance.md with six plots from tools/plot_performance.py (git-tracked inputs only, each plot labelled MEASURED, DERIVED or PROJECTION).
+- New wiki/raw/assets/plots/*.png and wiki/raw/assets/pnr-128/*.webp (ORFS layout renders of runs f6599c24 and 15914a90).
+- Evidence: 16-neuron metadata of runs c1211375 and 88827052 copied to runs_digital_e2e/digital/evidence/.

@@ -102,6 +102,7 @@ Concept pages explain an idea or a mechanism.
 
 Summary pages digest a topic from the literature.
 
+- [128-neuron core performance in plots](summaries/128-neuron-core-performance.md). Six labelled plots (measured, derived, projection): layouts, parity raster, timing by stage, ROM against SRAM, throughput and energy, scaling. Made by tools/plot_performance.py.
 - [Fractal and hierarchical designs for neuromorphic chips](summaries/fractal-and-hierarchical-neuromorphic-designs.md). H-tree, tree and mesh routing in real chips, Rent's rule, and where "fractal" is loose usage. Beginner background included.
 - [On-chip learning for spiking neural network hardware](summaries/on-chip-learning-for-snn-hardware.md). STDP, SDSP and e-prop chips (ODIN, Loihi, ReckOn), and why SDSP fits the one-word-per-source weight layout of our core. Beginner background included.
 - [CMOS compute-in-memory](summaries/cmos-compute-in-memory.md). Digital and analog SRAM CIM, SNN CIM macros, open standard-cell memory tools for sky130, and limits. Beginner background included.
