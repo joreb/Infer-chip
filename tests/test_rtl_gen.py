@@ -51,3 +51,34 @@ def test_iverilog_compiles_256(tmp_path):
     res = subprocess.run(["iverilog", "-tnull", "-o", str(out), str(src)],
                          capture_output=True, text=True)
     assert res.returncode == 0, res.stderr
+
+ROM16 = {"neurons": 16, "fanout": 4, "weight_width": 4, "timesteps": 16,
+         "util_target": 25, "clock_ns": 40.0, "seed": 3, "weight_store": "rom"}
+
+
+def test_rom_store_holds_the_same_weight_words_on_die():
+    # dense-ROM baseline (#2): same FSM, the SRAM port moves inside as a
+    # constant case tree filled from the TB's SRAM image
+    from targets.digital.model import weight_words
+    text = generate_rtl(ROM16)
+    assert module_name(ROM16) == "snn_core_16_rom"
+    assert "module snn_core_16_rom" in text
+    assert "input  wire [64-1:0] w_read_sram" not in text
+    assert "output reg  [5-1:0] w_read_sram_addr" not in text
+    # registered read keeps the addr-in-N, data-in-N+1 latency
+    assert "w_read_sram <= rom_word(w_read_sram_addr);" in text
+    for s, w in enumerate(weight_words(ROM16)):
+        assert f"5'd{s}: rom_word = 64'h{w:016x};" in text
+
+
+def test_external_store_is_the_default():
+    assert module_name(CFG256) == "snn_core_256"
+    assert "rom_word" not in generate_rtl({**CFG256, "weight_store": "external"})
+
+
+def test_iverilog_compiles_rom(tmp_path):
+    src = tmp_path / "snn_core.v"
+    src.write_text(generate_rtl(ROM16))
+    res = subprocess.run(["iverilog", "-tnull", "-o", str(tmp_path / "o"), str(src)],
+                         capture_output=True, text=True)
+    assert res.returncode == 0, res.stderr

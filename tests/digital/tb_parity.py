@@ -64,6 +64,8 @@ async def parity(dut):
     model = LIFModel(cfg)
     train = _frames(cfg)
     words = weight_words(cfg)
+    # weight_store=rom (#2): the weights are on die, the TB drives no SRAM
+    ext = cfg.get("weight_store", "external") != "rom"
 
     # external weight SRAM: registered read, addr in cycle N -> data in N+1
     async def sram():
@@ -77,12 +79,14 @@ async def parity(dut):
     dut.rst_n.value = 0
     dut.timestep_start.value = 0
     dut.in_spk.value = 0
-    dut.w_read_sram.value = 0
+    if ext:
+        dut.w_read_sram.value = 0
     for _ in range(2):
         await RisingEdge(dut.clk)
     dut.rst_n.value = 1
     await RisingEdge(dut.clk)
-    cocotb.start_soon(sram())
+    if ext:
+        cocotb.start_soon(sram())
 
     out = np.zeros((steps, n), dtype=np.int8)
     for t in range(steps):

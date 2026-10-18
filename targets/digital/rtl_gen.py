@@ -17,6 +17,11 @@ Protocol (one timestep):
   fired neurons to REST.
 - EMIT: fires stream out one per cycle on spike_out_valid/spike_out_addr
   until none remain.
+
+cfg["weight_store"] = "rom" (dense-ROM baseline, #2) keeps the same FSM and
+moves the SRAM inside: the weight_words() image becomes a constant case tree
+with a registered read, so the N -> N+1 latency is unchanged. The module name
+gets a _rom suffix so its ORFS results never mix with the external design.
 """
 
 PH_IDLE = 0
@@ -33,7 +38,12 @@ def _next_pow2(n: int) -> int:
 
 
 def module_name(cfg: dict) -> str:
-    return f"snn_core_{cfg['neurons']}"
+    suffix = "_rom" if _rom(cfg) else ""
+    return f"snn_core_{cfg['neurons']}{suffix}"
+
+
+def _rom(cfg: dict) -> bool:
+    return cfg.get("weight_store", "external") == "rom"
 
 
 def pad_size(cfg: dict) -> int:
@@ -64,8 +74,9 @@ def generate_rtl(cfg: dict) -> str:
     a("    input  wire        rst_n,")
     a("    input  wire        timestep_start,")
     a(f"    input  wire [{n}-1:0] in_spk,")
-    a(f"    input  wire [{p * ww}-1:0] w_read_sram,")
-    a(f"    output reg  [{aw}-1:0] w_read_sram_addr,")
+    if not _rom(cfg):
+        a(f"    input  wire [{p * ww}-1:0] w_read_sram,")
+        a(f"    output reg  [{aw}-1:0] w_read_sram_addr,")
     a("    output reg         spike_out_valid,")
     a("    output reg  [15:0] spike_out_addr,")
     a("    output reg         spike_out_data")
@@ -89,6 +100,24 @@ def generate_rtl(cfg: dict) -> str:
     a(f"reg [PAD-1:0] fire_shift;")
     a(f"reg [PAD-1:0] in_spk_buf;")
     a(f"reg [{aw}:0] scnt;  // counts PAD too, one extra bit")
+    if _rom(cfg):
+        # weights as constant case tree: survives Yosys synthesis (initial-block
+        # ROMs become flops with dropped init on sky130, see 079bfaf)
+        from targets.digital.model import weight_words
+        a(f"reg [{aw}-1:0] w_read_sram_addr;")
+        a(f"reg [{p * ww}-1:0] w_read_sram;")
+        a(f"function [{p * ww}-1:0] rom_word;")
+        a(f"    input [{aw}-1:0] ra;")
+        a("    begin")
+        a("        case (ra)")
+        for s, w in enumerate(weight_words(cfg)):
+            a(f"            {aw}'d{s}: rom_word = {p * ww}'h{w:0{(p * ww + 3) // 4}x};")
+        a(f"            default: rom_word = {{{p * ww}{{1'b0}}}};")
+        a("        endcase")
+        a("    end")
+        a("endfunction")
+        a("// registered read: addr in cycle N, data in N+1, as the external SRAM")
+        a("always @(posedge clk) w_read_sram <= rom_word(w_read_sram_addr);")
     a("")
     a("// decayed membrane, 32-bit intermediate, no truncation before compare")
     a("wire signed [31:0] decayed [0:PAD-1];")
