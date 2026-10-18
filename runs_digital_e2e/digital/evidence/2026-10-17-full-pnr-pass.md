@@ -27,12 +27,21 @@ Image: openroad/orfs:latest d4590b320d36. Verbatim log:
 ## Note on provenance
 
 The flow's copy-out (`cp -r flow/results/... /results/`) never reached the
-host: the bind target was empty after container exit and no docker volume
-was created, so `metadata.json` and `6_final.gds` were lost with `--rm`.
-`flow.py` itself is clear of this: a direct mount+cp+chown test against
-the same image succeeds (rc=0, file lands on the host), so the loss came
-from the manual rerun wrapper's mounts, which were not recorded. Every
-number above is quoted from the merged stage log with its line
+host: the bind target was empty after container exit, so `6_final.gds` was
+lost with `--rm`.
+
+**Correction (2026-10-18):** the earlier claim here that `flow.py` was
+clear, and that the manual wrapper's mounts were at fault, is wrong. The
+earlier mount+cp+chown test did not run `cd flow`. The real script runs
+`cd flow && make ...`, and that `cd` persists, so the copy path
+`flow/results/...` resolved to `flow/flow/results`. `cp` failed and the
+script still exited 0. This is reproduced in `openroad/orfs:latest`
+("cp: cannot stat", container rc=0) and fixed in dfef3b6.
+
+`metadata.json` was never lost, because it was never written: bare `make`
+does not run genMetrics. ORFS writes `metadata.json` only from
+`make metadata-generate`, under `flow/reports/`. dfef3b6 runs that target
+too. Every number above is quoted from the merged stage log with its line
 evidence. Until a rerun captures the results tree, metrics that parse_metrics
 reads (instance__area__stdcell, worst setup slack from metadata) are not
 re-derivable from this record; the FLW-0009 and cell-type-report lines are.
