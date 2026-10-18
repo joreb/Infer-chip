@@ -136,3 +136,7 @@
 - New comparisons/rom-vs-external-sram-weights.md: GitHub #2 result, 128 neurons, runs f6599c24 and 15914a90.
 - Downloaded the 29 cited arXiv PDFs to raw/papers/<id>.pdf (git-ignored); page-1 titles of the 2026 ids match the summaries.
 - index.md: new Summaries and Comparisons sections.
+## [2026-10-18] update | Weight storage hierarchy concept page
+
+- New concepts/weight-storage-hierarchy.md: SSD, DDR5, HBM and on-chip memory against the needs of the core (512-bit word per cycle, fixed 1-cycle latency); load-then-run path over SPI (GitHub #11); double-buffered streaming; scale check for 1 Tb and 1 T-parameter models (about 95 sky130 wafers of OpenRAM per Tb).
+- index.md: new Concepts section.
