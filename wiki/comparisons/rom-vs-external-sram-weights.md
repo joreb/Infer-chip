@@ -60,6 +60,8 @@ xychart-beta
     bar [1.054, 0.971, 1.260, 0.977]
 ```
 
+Plots of these runs: [128-neuron core performance](../summaries/128-neuron-core-performance.md).
+
 At 16 neurons the ratios were 1.035 (area), 1.052 (power), 1.048 (wirelength) and 0.995 (slack).
 
 ## What the numbers mean

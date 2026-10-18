@@ -122,6 +122,7 @@ utilization target, so a design with more cells also gets a larger die.
 
 ## Next
 
-[Tutorial 4: How to run the agent loop](running-the-agent-loop.md).
+[Tutorial 4: How to run the agent loop](running-the-agent-loop.md). For plots of these metrics, see
+[128-neuron core performance](../summaries/128-neuron-core-performance.md).
 
 Related: [glossary](../concepts/glossary.md), [index](../index.md).
