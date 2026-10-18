@@ -84,6 +84,7 @@ At 16 neurons the ratios were 1.035 (area), 1.052 (power), 1.048 (wirelength) an
   remove the ROM.
 - **The SRAM area.** A fair total needs an SRAM macro for the external design, for example from
   OpenRAM, in the same flow.
+- **Reloadable on-die weights.** See [weight storage hierarchy](../concepts/weight-storage-hierarchy.md) and GitHub #11.
 - **Power with real activity.** Use a switching-activity file from the parity simulation instead
   of the default.
 
