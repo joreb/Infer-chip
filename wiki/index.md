@@ -82,6 +82,19 @@ Bug pages record defects with no fix yet, or fixes that span many pages.
 
 - [Concurrent orchestrator invocations clobber one shared run directory](bugs/orchestrator-run-dir-has-no-lock.md). Two runs wrote the same journal and results tree without coordination or error detection. Fixed in a8241a1 with one directory and one `inv` stamp per run. Beginner tutorial included.
 
+## Summaries
+
+Summary pages digest a topic from the literature.
+
+- [Fractal and hierarchical designs for neuromorphic chips](summaries/fractal-and-hierarchical-neuromorphic-designs.md). H-tree, tree and mesh routing in real chips, Rent's rule, and where "fractal" is loose usage. Beginner background included.
+- [CMOS compute-in-memory](summaries/cmos-compute-in-memory.md). Digital and analog SRAM CIM, SNN CIM macros, open standard-cell memory tools for sky130, and limits. Beginner background included.
+
+## Comparisons
+
+Comparison pages put two measured designs side by side with a verdict.
+
+- [On-die ROM weights against external SRAM weights, 128 neurons](comparisons/rom-vs-external-sram-weights.md). Dense-ROM baseline (GitHub #2): +5.4% area, +26% wirelength, -2.9% power; the ROM is cheap only because its zero weights are removed.
+
 ## Procedures
 
 Procedure pages record how to act in this project.

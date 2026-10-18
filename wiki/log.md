@@ -129,3 +129,10 @@
 - SCHEMA.md: optional "Background for beginners" section for incident and bug pages.
 - ENG-008 stays reserved for the SDC braces page (GitHub #3).
 - In progress, no page yet: dense-ROM baseline (GitHub #2, commit 175c76c). The comparison page comes when the 128-neuron ROM run has numbers.
+## [2026-10-18] update | Research summaries and the ROM baseline comparison
+
+- New summaries/fractal-and-hierarchical-neuromorphic-designs.md: digest of a research-agent literature scan (Braindrop H-tree, DYNAPs, Mosaic, Rent's rule, mesh chips, gaps, 3 experiments).
+- New summaries/cmos-compute-in-memory.md: digest of a research-agent literature scan (digital and analog SRAM CIM, SNN CIM, ORRAM, OpenRAM, Ankhdjet, limits, 3 experiments).
+- New comparisons/rom-vs-external-sram-weights.md: GitHub #2 result, 128 neurons, runs f6599c24 and 15914a90.
+- Downloaded the 29 cited arXiv PDFs to raw/papers/<id>.pdf (git-ignored); page-1 titles of the 2026 ids match the summaries.
+- index.md: new Summaries and Comparisons sections.
