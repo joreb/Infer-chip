@@ -170,3 +170,17 @@ def test_container_script_fails_when_copy_out_fails(tmp_path):
                               design=str(tmp_path / "design"), out=str(tmp_path / "out"))
     proc, _ = _run_script(tmp_path, script.replace("make DESIGN_CONFIG", "true DESIGN_CONFIG"))
     assert proc.returncode != 0
+
+
+def test_parse_metrics_picks_final_stage_values_from_real_metadata():
+    # real ORFS metadata.json (128-neuron run, 2026-10-18) holds the same
+    # metric at every stage; the first-key pick returned CTS-stage values
+    # (slack 33.1717, wirelength = CTS estimate 1282660) instead of the
+    # finish / detailed-route values that the stage log reports (#1)
+    m = parse_metrics(Path(__file__).parent / "fixtures/orfs_real_128")
+    assert m["verdict"] == "pass"
+    assert m["worst_slack_ns"] == 33.1432          # finish__timing__setup__ws
+    assert m["pwr_w"] == 0.0141645                 # finish__power__total
+    assert abs(m["area_mm2"] - 0.704933) < 1e-9    # finish__..._area__stdcell
+    assert m["wirelength_um"] == 1449559           # detailedroute__route__wirelength
+    assert m["drc"] == 0                           # final, not iter__0 (530)

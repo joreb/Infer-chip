@@ -63,11 +63,18 @@ def parse_metrics(results_dir: Path) -> dict:
                 return v
         return None
 
-    slack = first(("timing__setup__ws", "percent"), ("__setup__ws", "percent"))
-    pwr = first(("power__total", None))
-    drc = first(("drc_errors", None), ("design__violations", None))
-    area = first(("instance__area__stdcell", None), ("instance__area", None))
-    wl = first(("wirelength__estimated", None), ("wirelength", "__min"))
+    # real metadata repeats each metric per stage in key order (cts__ comes
+    # before finish__), so name the final stage first; the bare patterns
+    # stay as fallbacks for older or renamed keys
+    slack = first(("finish__timing__setup__ws", "percent"),
+                  ("timing__setup__ws", "percent"), ("__setup__ws", "percent"))
+    pwr = first(("finish__power__total", None), ("power__total", None))
+    drc = first(("detailedroute__route__drc_errors", "iter"),
+                ("drc_errors", "iter"), ("design__violations", None))
+    area = first(("finish__design__instance__area__stdcell", None),
+                 ("instance__area__stdcell", None), ("instance__area", None))
+    wl = first(("detailedroute__route__wirelength", "iter"),
+               ("wirelength__estimated", None), ("wirelength", "__min"))
     slack_n = _num(slack)
     if slack_n is None:
         return FAIL("no setup slack metric in metadata.json")

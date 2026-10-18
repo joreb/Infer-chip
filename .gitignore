@@ -21,3 +21,7 @@ tools/.cache/
 # the history and tools/fetch_raw.py reproduces them. Markdown capture notes
 # and .gitkeep files beside them stay tracked.
 wiki/raw/**/*.pdf
+
+# orchestrated PnR outputs hold multi-MB GDS; evidence copies go in runs_digital_e2e/
+runs_e2e128/
+runs_smoke16/

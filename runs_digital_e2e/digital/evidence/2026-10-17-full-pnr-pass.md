@@ -10,7 +10,7 @@ Image: openroad/orfs:latest d4590b320d36. Verbatim log:
 | Metric | Value | Log line |
 |---|---|---|
 | Verdict | pass (rc=0, GDS merged: 6_1_merged.gds -> 6_final.gds) | cp line, final |
-| Setup slack (FLW-0009, clock clk) | +32.682 ns at 40 ns period | FLW-0009 |
+| Setup slack (FLW-0009, clock clk) | +32.682 ns at 40 ns period. This is the global-route stage slack; final slack is +33.1432 ns (see 2026-10-18 evidence) | FLW-0009 |
 | Setup violations | none (RSZ-0098) | line 1100 |
 | Hold violations | none (RSZ-0033) | line 1602 |
 | DRC violations | 0 (DRT-0199 final pass = 0) | line 2366 |
