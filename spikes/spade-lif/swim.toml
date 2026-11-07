@@ -1,0 +1,4 @@
+name = "spade_lif_spike"
+[synthesis]
+top = "spade_lif_spike::main"
+command = "synth"

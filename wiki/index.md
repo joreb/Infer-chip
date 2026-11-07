@@ -142,3 +142,5 @@ Musing pages record dated, immutable decisions and deliberations from a single m
 Investigation records for live failures. Each hypothesis stays open while evidence arrives. When the investigation closes, it freezes.
 
 - [Hypothesis set: 1_synth load_design failure (attempt 3)](tasks/hypothesis/2026-10-17-1-synth-load-design-fail.md). Orchestrated 128-neuron PnR run fails at yosys design load with unclear error; full log pending to anchor hypotheses about SDC braces, design binding, memory extraction, or stale artifacts.
+- [Evaluate building an FPGA prototype for the spiking core](tasks/hypothesis/2026-10-19-evaluate-fpga-prototype.md). Open evaluation of whether an FPGA prototype is worth the bring-up cost before the pitch, gated on synthesis fit, QSPI bring-up and parity evidence.
+- [Spade spike on one RTL module](tasks/hypothesis/2026-10-19-spade-spike-for-one-module.md). Open investigation: can one module be authored in Spade, compiled to Verilog, and verified bit for bit against the existing golden vectors without disturbing the generator or bench?

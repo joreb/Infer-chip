@@ -82,3 +82,31 @@ stage-2 agent tooling.
 - rest != 0 LIF decay semantics
 - cc-fallback agent_note
 - validate_config type checks before api backend
+## 7. SDK, API and ecosystem for edge AI (long-term, post-pitch)
+
+A flexible software stack around the fabric: config and weight-packaging APIs,
+SPI streaming routines, a reference host trainer, and tooling so edge AI
+applications can adopt the core without RTL work. This is the commercial
+surface, not the PoC.
+
+Why it is deferred: the PoC must keep the contract minimal (config-driven
+generator, external weights by design) so it stays verifiable and tape-out
+focused. The SDK should follow the settled interface, not precede it.
+
+When to pick up: after the pitch, once train-and-map and the OpenSpike-style
+weight path (docs/openspike-memory-interface.md) are settled.
+
+## 8. LLM inference chip design space (long-term, separate track)
+
+Designing an LLM inference accelerator: a tiled dataflow engine (GEMM arrays,
+attention and KV cache, normalization/activation) plus compiler/runtime that
+maps a transformer to it, validated end to end against a software model. The
+dominant constraints are memory bandwidth, KV cache management and precision,
+not ALU throughput. This is out of scope for the current SNN PoC.
+
+Why it is deferred: the PoC targets an edge spiking core; a transformer
+accelerator needs HBM/GDDR, a full compiler, and different thermal and I/O
+budgets. Starting point for any such work should be a proven open dataflow
+accelerator design plus work on memory and compiler.
+
+When to pick up: only as a separate project after the 2026-11-30 pitch.
