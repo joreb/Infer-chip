@@ -188,3 +188,7 @@
 
 - Created tasks/hypothesis/2026-10-19-spade-spike-for-one-module.md as an open investigation task
 - Added the new task to the Hypotheses section of index.md
+
+## [2026-10-19] ingest | Veryl vs Spade vs Chisel raw note
+
+- Created wiki/summaries/veryl-vs-spade-vs-chisel.md from wiki/raw/notes/Google - very vs spade vs chisel what to use to build GPU.md
