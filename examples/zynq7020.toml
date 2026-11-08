@@ -1,0 +1,19 @@
+[core]
+neurons = 128
+fanout = 8
+weight_width = 4
+timesteps = 64
+seed = 11
+util_target = 60
+clock_ns = 10.0
+weight_store = "rom"
+
+[resources]
+device = "XC7Z020-CLG400"
+logic_cells = 85000
+luts = 53200
+flip_flops = 106400
+dsp_slices = 220
+block_ram_mb = 4.9
+adc = "XADC (2x 12-bit 1 MSPS)"
+best_clock_rate_mhz = 100.0
