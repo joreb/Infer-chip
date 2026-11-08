@@ -192,3 +192,8 @@
 ## [2026-10-19] ingest | Veryl vs Spade vs Chisel raw note
 
 - Created wiki/summaries/veryl-vs-spade-vs-chisel.md from wiki/raw/notes/Google - very vs spade vs chisel what to use to build GPU.md
+
+## [2026-10-19] ingest | arXiv 2503.05951 (TPU-Gen)
+
+- Fetched arXiv 2503.05951 via tools/fetch_arxiv.py
+- Created wiki/summaries/tpu-gen-llm-driven-custom-tpu-generator.md
