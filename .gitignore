@@ -27,3 +27,7 @@ runs_e2e128/
 runs_smoke16/
 runs_rom16/
 runs_rom128/
+
+# complex128 GPU run dirs: ODB/GDS/logs (1.7 GB). Hand-written ORFS inputs are force-added.
+runs_complex128*/
+runs_complex128*.log

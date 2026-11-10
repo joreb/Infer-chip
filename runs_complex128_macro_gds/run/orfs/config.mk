@@ -1,0 +1,13 @@
+export DESIGN_NAME = complex128_gpu_128
+export DESIGN_NICKNAME = complex128_gpu_128
+export PLATFORM = sky130hs
+export VERILOG_FILES = ./designs/src/snn_core/snn_core.v
+export SDC_FILE = ./designs/src/snn_core/snn_core.sdc
+export CLOCK_PERIOD = 10.0
+export CLOCK_PORT = clk
+export ADDITIONAL_LEFS = /mnt/design/complex128_unit.lef
+export ADDITIONAL_LIBS = /mnt/design/complex128_unit_typ.lib
+export ADDITIONAL_GDS = /mnt/design/complex128_unit.gds
+export DIE_AREA = 0 0 19000 19000
+export CORE_AREA = 100 100 18900 18900
+export MACRO_PLACEMENT_TCL = /mnt/design/macro_placement.tcl
