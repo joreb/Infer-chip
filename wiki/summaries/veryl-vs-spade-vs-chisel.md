@@ -1,7 +1,7 @@
 ---
 title: Veryl vs Spade vs Chisel for GPU or core design
 created: 2026-10-19
-updated: 2026-10-19
+updated: 2026-11-10
 type: summary
 tags: [hdl, verilog, spade, chisel, veryl, comparison, raw]
 sources:
@@ -22,3 +22,7 @@ hardware project such as a GPU.
 - Verilog suits fixed-function FPGA work and beginners.
 - Chisel suits scalable compute logic and AI designs.
 - Spade suits clean pipeline experiments and small modules.
+
+## Decision
+
+- 2026-11-10: remove `targets/digital/rtl_gen.py` and select one HDL (Amaranth, Veryl, Chisel or Spade) by a full-fabric test. See [the musing](../tasks/musings/2026-11-10-replace-rtl-gen-py-with-an-hdl.md).

@@ -197,3 +197,9 @@
 
 - Fetched arXiv 2503.05951 via tools/fetch_arxiv.py
 - Created wiki/summaries/tpu-gen-llm-driven-custom-tpu-generator.md
+
+## [2026-11-10] update | Musing: replace rtl_gen.py with an HDL
+
+- New tasks/musings/2026-11-10-replace-rtl-gen-py-with-an-hdl.md: verdict to remove targets/digital/rtl_gen.py; candidates Amaranth, Veryl, Chisel, Spade; callers to keep; selection test.
+- index.md: new musing entry.
+- summaries/veryl-vs-spade-vs-chisel.md: Decision section links the musing.
