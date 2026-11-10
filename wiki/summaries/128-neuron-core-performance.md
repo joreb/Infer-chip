@@ -1,7 +1,7 @@
 ---
 title: 128-neuron core performance in plots
 created: 2026-10-18
-updated: 2026-10-18
+updated: 2026-10-19
 type: summary
 tags: [snn, flow, orfs, benchmark]
 sources: []

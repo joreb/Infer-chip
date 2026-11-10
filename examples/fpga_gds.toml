@@ -1,0 +1,15 @@
+[core]
+neurons = 32
+fanout = 8
+weight_width = 4
+timesteps = 32
+seed = 11
+util_target = 60
+clock_ns = 4.0
+weight_store = "rom"
+
+[resources]
+luts = 9900
+dsp_slices = 128
+xadc = 1
+best_clock_rate_mhz = 100.0

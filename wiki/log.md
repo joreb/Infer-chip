@@ -169,3 +169,31 @@
 - targets/photonic/svd_mesh.py: SVD + Clements decomposition of the SNN weight matrix and a photonic LIF forward model; tests in tests/test_svd_mesh.py.
 - tools/photonic_layout.py: gdsfactory 9.51.0 layouts of the SVD mesh for N = 4, 8, 16 in raw/assets/photonic/ (generic PDK, no foundry DRC).
 - tools/plot_photonic_vs_digital.py: layout at the same scale, area, accuracy sweeps, energy and latency with ASSUMED ranges.
+
+## [2026-10-18] update | Link performance plots from ROM comparison and tutorial 3
+
+- wiki/comparisons/rom-vs-external-sram-weights.md: added a link to the 128-neuron core performance summary, which holds plots of the runs.
+- wiki/tutorials/reading-ppa-metrics.md: added a link to the performance plots in the Next section.
+
+## [2026-10-19] update | Link robot integration musing from performance page
+
+- wiki/summaries/128-neuron-core-performance.md: added a link to the robot integration over SPI musing (GitHub #13) and bumped the updated date.
+
+## [2026-10-19] create | FPGA prototype evaluation task
+
+- Created tasks/hypothesis/2026-10-19-evaluate-fpga-prototype.md as an open investigation task
+- Added the new task to the Hypotheses section of index.md
+
+## [2026-10-19] create | Spade spike investigation task
+
+- Created tasks/hypothesis/2026-10-19-spade-spike-for-one-module.md as an open investigation task
+- Added the new task to the Hypotheses section of index.md
+
+## [2026-10-19] ingest | Veryl vs Spade vs Chisel raw note
+
+- Created wiki/summaries/veryl-vs-spade-vs-chisel.md from wiki/raw/notes/Google - very vs spade vs chisel what to use to build GPU.md
+
+## [2026-10-19] ingest | arXiv 2503.05951 (TPU-Gen)
+
+- Fetched arXiv 2503.05951 via tools/fetch_arxiv.py
+- Created wiki/summaries/tpu-gen-llm-driven-custom-tpu-generator.md

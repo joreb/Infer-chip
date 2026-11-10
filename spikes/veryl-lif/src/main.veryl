@@ -1,0 +1,23 @@
+module LifStep (
+    i_v: input i8,
+    i_acc: input i8,
+    i_leak: input i8,
+    i_threshold: input i8,
+    i_rest: input i8,
+    o_result: output i8,
+    o_fire: output logic,
+) {
+    let sum8: i8 = i_v + i_acc;
+    let cand: i8 = sum8 - i_leak;
+    let fire: logic = cand >= i_threshold;
+
+    always_comb {
+        if fire {
+            o_result = i_rest;
+            o_fire = 1'b1;
+        } else {
+            o_result = cand;
+            o_fire = 1'b0;
+        }
+    }
+}

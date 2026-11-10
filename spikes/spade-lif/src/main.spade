@@ -1,0 +1,9 @@
+fn lif_step(v: int<8>, acc: int<8>, leak: int<8>, threshold: int<8>, rest: int<8>) -> (int<8>, bool) {
+    let sum8 = trunc::<int<9>, int<8>>(v + acc);
+    let candidate = trunc::<int<9>, int<8>>(sum8 - leak);
+    if candidate >= threshold { (rest, true) } else { (candidate, false) }
+}
+
+entity main(v: int<8>, acc: int<8>, leak: int<8>, threshold: int<8>, rest: int<8>) -> (int<8>, bool) {
+    lif_step(v, acc, leak, threshold, rest)
+}
